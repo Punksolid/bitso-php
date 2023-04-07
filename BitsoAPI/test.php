@@ -6,28 +6,24 @@ $key = '';
 $secret = '';
 
 $bitso = new bitso($key, $secret,"https://dev.bitso.com/api/v3");
-$order_book = $bitso->order_book(array('book'=>'btc_mxn','aggregate' => 'True'));
-$ticker = $bitso->ticker(array('book'=>'btc_mxn'));
+$order_book = $bitso->order_book(['book'=>'btc_mxn', 'aggregate' => 'True']);
+$ticker = $bitso->ticker(['book'=>'btc_mxn']);
 $trades = $bitso->trades(['book'=>'btc_mxn', 'limit' => '2']);
 $available_books = $bitso->available_books();
 $account_status = $bitso->account_status();
 $balances = $bitso->balances();
 $fees = $bitso->fees();
-$ledger = $bitso->ledger(array('limit'=>'10'));
-$withdrawals = $bitso->withdrawals(array('limit'=>'10'));
-$fundings = $bitso->fundings(array('limit'=>'1'));
-$user_trades = $bitso->user_trades(array('book'=>'btc_mxn'));
-$open_orders = $bitso->open_orders(array('book'=>'btc_mxn'));
-$place_order = $bitso->place_order(array('book'  => 'btc_mxn',
-                              'side'  => 'buy',
-                              'major' => '.01',
-                              'price' => '1000',
-                              'type'  => 'limit'));
+$ledger = $bitso->ledger(['limit'=>'10']);
+$withdrawals = $bitso->withdrawals(['limit'=>'10']);
+$fundings = $bitso->fundings(['limit'=>'1']);
+$user_trades = $bitso->user_trades(['book'=>'btc_mxn']);
+$open_orders = $bitso->open_orders(['book'=>'btc_mxn']);
+$place_order = $bitso->place_order(['book'  => 'btc_mxn', 'side'  => 'buy', 'major' => '.01', 'price' => '1000', 'type'  => 'limit']);
 $id = $place_order->payload->oid; 
-$lookup_order = $bitso->lookup_order(array($id));
+$lookup_order = $bitso->lookup_order([$id]);
 #NEED TO IMPLEMENT ALL
-$cancel_order =  $bitso->cancel_order(array($id,$id,$id));
-$funding_destination = $bitso->funding_destination(array('fund_currency'=>'eth'));
+$cancel_order =  $bitso->cancel_order([$id, $id, $id]);
+$funding_destination = $bitso->funding_destination(['fund_currency'=>'eth']);
 print_r($funding_destination);
 // $btc_withdrawal = $bitso->btc_withdrawal(array('amount'  => '.05',
 //                               'address'  => ''));

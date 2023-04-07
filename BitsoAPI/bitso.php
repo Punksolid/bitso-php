@@ -8,7 +8,7 @@ class bitso
   protected $key;
   protected $secret;
   protected $url;
-	
+
   #constructor, default is dev url
   public function __construct($key='', $secret='', $url="https://bitso.com/api/v3"){
     $this->key = $key;
@@ -27,15 +27,13 @@ class bitso
         curl_setopt($ch, CURLOPT_URL, $path);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $HTTPMethod);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-          'Authorization: ' .  $authHeader,
-          'Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: ' .  $authHeader, 'Content-Type: application/json']);
       } else if ($HTTPMethod == 'POST') {
         curl_setopt($ch, CURLOPT_URL, $path);
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, $HTTPMethod);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $JSONPayload);
         curl_setopt($ch,CURLOPT_RETURNTRANSFER,1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Authorization: ' .  $authHeader,'Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Authorization: ' .  $authHeader, 'Content-Type: application/json']);
       } else {
         echo "Incorrect HTTP method";
       }
@@ -52,11 +50,11 @@ class bitso
 
   function checkAndDecode($result){
     $result = json_decode($result);
-    if($result->success != 1){
-      throw new bitsoException($result->error->message, 1);
-    } else {
-      return $result;
-    }
+//    if($result->success != 1){
+////      throw new bitsoException($result->error->message, 1);
+//    } else {
+//      return $result;
+//    }
   }
 ######          #######
 ###### PUBLIC QUERIES #######
@@ -80,11 +78,11 @@ class bitso
     Get a Bitso price ticker.
       Args:
         book (str):
-          Specifies which book to use. 
-            
+          Specifies which book to use.
+
       Returns:
         A bitso.Ticker instance. */
-    
+
     $parameters = http_build_query($params,'','&');
     $path = $this->url . "/ticker/?".$parameters;
     $type = 'PUBLIC';
@@ -102,7 +100,7 @@ class bitso
           Specifies which book to use. Default is btc_mxn
         aggregate (bool):
           Specifies if orders should be aggregated by price
-          
+
       Returns:
         A bitso.OrderBook instance. */
 
@@ -130,7 +128,7 @@ class bitso
         sort (str, optional):
           Sorting by datetime: 'asc', 'desc'
           Defuault is 'desc'
-          
+
       Returns:
         A list of bitso.Trades instances. */
 
@@ -154,10 +152,9 @@ class bitso
     $format = 'Bitso %s:%s:%s';
     $authHeader =  sprintf($format, $this->key, $nonce, $signature);
     $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload, $authHeader);
-
     return $this->checkAndDecode($result);
   }
-    
+
     ######           #######
 ###### PRIVATE QUERIES #######
 ######           #######
@@ -214,7 +211,7 @@ class bitso
 
   function ledger($params){
   	/*
-    Get the ledger of user operations 
+    Get the ledger of user operations
     Args:
       operations (str, optional):
         They type of operations to include. Enum of ('trades', 'fees', 'fundings', 'withdrawals')
@@ -237,14 +234,15 @@ class bitso
     $nonce = $this->makeNonce();
     $HTTPMethod = 'GET';
     $JSONPayload = '';
-    $type = 'PRIVATE'; 
-  	
+    $type = 'PRIVATE';
+
     return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);
   }
 
   function withdrawals($params){
+    $parameters = null;
     /*
-    Get the ledger of user operations 
+    Get the ledger of user operations
     Args:
       wids (list, optional):
         Specifies which withdrawal objects to return
@@ -279,8 +277,9 @@ class bitso
   }
 
   function fundings($params){
+    $parameters = null;
     /*
-    Get the ledger of user operations 
+    Get the ledger of user operations
     Args:
       fids (list, optional):
         Specifies which funding objects to return
@@ -332,7 +331,7 @@ class bitso
     Get a list of the user's transactions
     Args:
        book (str):
-        Specifies which order book to get user trades from. 
+        Specifies which order book to get user trades from.
       marker (str, optional):
         Returns objects that are older or newer (depending on 'sort') than the object which
         has the marker value as ID
@@ -341,7 +340,7 @@ class bitso
       sort (str, optional):
         Sorting by datetime: 'asc', 'desc'
         Defuault is 'desc'
-     
+
     Returns:
       A list bitso.UserTrade instances.
     */
@@ -363,7 +362,7 @@ class bitso
     Args:
       book (str):
         Specifies which book to use. Default is btc_mxn
-        
+
     Returns:
       A list of bitso.Order instances.
     */
@@ -384,9 +383,9 @@ class bitso
     Args:
       order_ids (list):
         A list of Bitso Order IDs
-        
+
     Returns:
-      A list of bitso.Order instances. 
+      A list of bitso.Order instances.
     */
     $parameters = implode(',', $ids);
     $path = $this->url . "/orders/".$parameters;
@@ -405,7 +404,7 @@ class bitso
     Args:
       order_id (str):
         A Bitso Order ID.
-        
+
     Returns:
       A list of Order IDs (OIDs) for the canceled orders. Orders may not be successfully cancelled if they have been filled, have been already cancelled, or the OIDs are incorrect
     */
@@ -430,9 +429,9 @@ class bitso
     Places a buy limit order.
       Args:
         book (str):
-          Specifies which book to use. 
+          Specifies which book to use.
         side (str):
-          the order side (buy or sell) 
+          the order side (buy or sell)
         order_type (str):
           Order type (limit or market)
         major (str):
@@ -442,7 +441,7 @@ class bitso
         price (str):
           Price per unit of major. For use only with limit orders.
       Returns:
-        A bitso.Order instance. 
+        A bitso.Order instance.
     */
     $path = $this->url . "/orders/";
     $RequestPath = "/api/v3/orders/";
@@ -459,8 +458,8 @@ class bitso
     Returns account funding information for specified currencies.
       Args:
         fund_currency (str):
-          Specifies which book to use. 
-      
+          Specifies which book to use.
+
       Returns:
         A bitso.Funding Destination instance.
     */
@@ -483,14 +482,14 @@ class bitso
           The amount of BTC to withdraw from your account
         address (str):
           The Bitcoin address to send the amount to
-      
+
       Returns:
         ok
     */
     $path = $this->url . "/bitcoin_withdrawal/";
     $RequestPath = "/api/v3/bitcoin_withdrawal/";
     $nonce = $this->makeNonce();
-    $HTTPMethod = 'POST';	
+    $HTTPMethod = 'POST';
     $JSONPayload = json_encode($params);
     $type = 'PRIVATE';
 
@@ -505,7 +504,7 @@ class bitso
           The amount of BTC to withdraw from your account
         address (str):
           The Bitcoin address to send the amount to
-      
+
       Returns:
         ok
     */
@@ -529,7 +528,7 @@ class bitso
             The amount of BTC to withdraw from your account
           address (str):
             The ripple address to send the amount to
-        
+
         Returns:
           ok
       */
@@ -561,9 +560,9 @@ class bitso
             The alpha-numeric reference number for this SPEI
           numeric_ref (str):
             The numeric reference for this SPEI
-        
+
         Returns:
-          ok      
+          ok
       */
       $path = $this->url . "/spei_withdrawal/";
       $RequestPath = "/api/v3/spei_withdrawal/";

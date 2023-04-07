@@ -34,31 +34,27 @@ class results
 		$bitsoPublic = new bitso("https://dev.bitso.com/api/v3");
 		$bitso = new bitso(self::key, self::secret,"https://dev.bitso.com/api/v3");
 
-		$order_book = $bitsoPublic->order_book(array('book'=>'btc_mxn','aggregate' => 'True'));
+		$order_book = $bitsoPublic->order_book(['book'=>'btc_mxn', 'aggregate' => 'True']);
 
-		$ticker = $bitsoPublic->ticker(array('book'=>'btc_mxn'));
+		$ticker = $bitsoPublic->ticker(['book'=>'btc_mxn']);
 		$trades = $bitsoPublic->trades(['book'=>'btc_mxn', 'limit' => '2']);
 		$available_books = $bitsoPublic->available_books();
 		$account_status = $bitso->account_status();
 		$balances = $bitso->balances();
 		$fees = $bitso->fees();
-		$ledger = $bitso->ledger(array('limit'=>'10'));
-		$withdrawals = $bitso->withdrawals(array('limit'=>'10'));
-		$fundings = $bitso->fundings(array('limit'=>'1'));
-		$user_trades = $bitso->user_trades(array('book'=>'btc_mxn'));
-		$open_orders = $bitso->open_orders(array('book'=>'btc_mxn'));
-		$place_order = $bitso->place_order(array('book'  => 'btc_mxn',
-		                              'side'  => 'buy',
-		                              'major' => '.01',
-		                              'price' => '1000',
-		                              'type'  => 'limit'));
+		$ledger = $bitso->ledger(['limit'=>'10']);
+		$withdrawals = $bitso->withdrawals(['limit'=>'10']);
+		$fundings = $bitso->fundings(['limit'=>'1']);
+		$user_trades = $bitso->user_trades(['book'=>'btc_mxn']);
+		$open_orders = $bitso->open_orders(['book'=>'btc_mxn']);
+		$place_order = $bitso->place_order(['book'  => 'btc_mxn', 'side'  => 'buy', 'major' => '.01', 'price' => '1000', 'type'  => 'limit']);
 		$id = $place_order->payload->oid; 
-		$lookup_order = $bitso->lookup_order(array($id));
+		$lookup_order = $bitso->lookup_order([$id]);
 
 		#NEED TO IMPLEMENT ALL
-		$cancel_order =  $bitso->cancel_order(array($id,$id,$id));
+		$cancel_order =  $bitso->cancel_order([$id, $id, $id]);
 
-		$funding_destination = $bitso->funding_destination(array('fund_currency'=>'eth'));
+		$funding_destination = $bitso->funding_destination(['fund_currency'=>'eth']);
 
 
 
