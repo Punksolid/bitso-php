@@ -49,7 +49,7 @@ class bitso
   }
 
   function checkAndDecode($result){
-    $result = json_decode($result);
+    $result = json_decode($result, null, 512, JSON_THROW_ON_ERROR);
 //    if($result->success != 1){
 ////      throw new bitsoException($result->error->message, 1);
 //    } else {
@@ -447,7 +447,7 @@ class bitso
     $RequestPath = "/api/v3/orders/";
     $nonce = $this->makeNonce();
     $HTTPMethod = 'POST';
-    $JSONPayload = json_encode($params);
+    $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
     $type = 'PRIVATE';
 
     return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);
@@ -490,7 +490,7 @@ class bitso
     $RequestPath = "/api/v3/bitcoin_withdrawal/";
     $nonce = $this->makeNonce();
     $HTTPMethod = 'POST';
-    $JSONPayload = json_encode($params);
+    $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
     $type = 'PRIVATE';
 
     return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);
@@ -512,7 +512,7 @@ class bitso
     $RequestPath = "/api/v3/ether_withdrawal/";
     $nonce = $this->makeNonce();
     $HTTPMethod = 'POST';
-    $JSONPayload = json_encode($params);
+    $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
     $type = 'PRIVATE';
 
     return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);
@@ -536,7 +536,7 @@ class bitso
       $RequestPath = "/api/v3/ripple_withdrawal/";
       $nonce = $this->makeNonce();
       $HTTPMethod = 'POST';
-      $JSONPayload = json_encode($params);
+      $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
       $type = 'PRIVATE';
 
       return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);
@@ -568,7 +568,7 @@ class bitso
       $RequestPath = "/api/v3/spei_withdrawal/";
       $nonce = $this->makeNonce();
       $HTTPMethod = 'POST';
-      $JSONPayload = json_encode($params);
+      $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
       $type = 'PRIVATE';
 
       return $this->getData($nonce,$path,$RequestPath,$HTTPMethod,$JSONPayload,$type);

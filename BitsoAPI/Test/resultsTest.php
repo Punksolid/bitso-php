@@ -335,7 +335,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
  		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
     $string = file_get_contents($root."/BitsoAPI/Test/ledger.json");
  		
-		$fake_response = json_decode($string);
+		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
 	 
 
  		$bitso->expects($this->any())
@@ -368,7 +368,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
  		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
     $string = file_get_contents($root."/BitsoAPI/Test/withdrawals.json");
 
-		$fake_response = json_decode($string);
+		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
 	 
 
  		$bitso->expects($this->any())
@@ -401,7 +401,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 
  		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
  		$string = file_get_contents($root."/BitsoAPI/Test/fundings.json");
-		$fake_response = json_decode($string);
+		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
 	 
 
  		$bitso->expects($this->any())
