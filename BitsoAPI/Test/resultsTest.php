@@ -6,8 +6,8 @@ use \Datetime;
 
 class resultsTest extends \PHPUnit_Framework_TestCase
 {
-  const key = '';
-  const secret = '';
+  public const key = '';
+  public const secret = '';
 
 	function testProcessResults(){
     	$result = new Results();

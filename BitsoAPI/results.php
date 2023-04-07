@@ -8,8 +8,8 @@ class results
 {
 	
 	// your api credentials
-	const key = '';
-	const secret = '';
+	public const key = '';
+	public const secret = '';
 
 	public function processResults(){
 
