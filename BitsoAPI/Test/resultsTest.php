@@ -1,27 +1,30 @@
 <?php
+
 namespace BitsoAPI\Test;
+
 use BitsoAPI\results;
-use BitsoAPI\bitso;
-use \Datetime;
+use Datetime;
 
 class resultsTest extends \PHPUnit_Framework_TestCase
 {
   public const key = '';
+
   public const secret = '';
 
-	function testProcessResults(){
-    	$result = new Results();
-    	$this->assertEquals($result->processResults(),1);
+    public function testProcessResults()
+    {
+        $result = new Results();
+        $this->assertEquals($result->processResults(), 1);
 
     }
 
- 	public function testAvailableBooks()
- 	{
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+    public function testAvailableBooks()
+    {
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": [{
            "book": "btc_mxn",
@@ -40,32 +43,30 @@ class resultsTest extends \PHPUnit_Framework_TestCase
            "minimum_value": "25.0",
            "maximum_value": "1000000.0"
         }]}');
-       
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('available_books')
             ->will($this->returnValue($fake_response));
 
         $response = $bitso->available_books()->payload[0];
 
-
-        $this->assertEquals($response->minimum_amount,(float)".003");
-        $this->assertEquals($response->maximum_amount,(float)"1000.00");
-        $this->assertEquals($response->minimum_price,(float)"100.00");
-        $this->assertEquals($response->maximum_price,(float)"1000000.00");
-        $this->assertEquals($response->minimum_value,(float)"25.00");
-        $this->assertEquals($response->maximum_value,(float)"1000000.00");
+        $this->assertEquals($response->minimum_amount, (float) '.003');
+        $this->assertEquals($response->maximum_amount, (float) '1000.00');
+        $this->assertEquals($response->minimum_price, (float) '100.00');
+        $this->assertEquals($response->maximum_price, (float) '1000000.00');
+        $this->assertEquals($response->minimum_value, (float) '25.00');
+        $this->assertEquals($response->maximum_value, (float) '1000000.00');
 
     }
 
     public function testTicker()
- 	{
- 		
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+    {
 
- 		$fake_response = json_decode(' {
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
+
+        $fake_response = json_decode(' {
         "success": true,
         "payload": {
             "book": "btc_mxn",
@@ -79,28 +80,25 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             "created_at": "2016-04-08T17:52:31.000+00:00"
             }
         }');
-       
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('ticker')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->ticker("btc_mxn")->payload;
+        $response = $bitso->ticker('btc_mxn')->payload;
 
-
-        $this->assertEquals($response->volume,(float)"22.31349615");
-        $this->assertEquals($response->ask,(float)"5632.24");
+        $this->assertEquals($response->volume, (float) '22.31349615');
+        $this->assertEquals($response->ask, (float) '5632.24');
 
     }
 
+    public function testOrderBook()
+    {
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-	public function testOrderBook()
-	{
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
-
- 		$fake_response = json_decode(' {
+        $fake_response = json_decode(' {
 	    "success": true,
 	    "payload": {
 	        "asks": [{
@@ -129,43 +127,41 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 	        "sequence": "27214"
 	       }
 	    }');
-       
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('order_book')
             ->will($this->returnValue($fake_response));
 
-		$response = $bitso->order_book("btc_mxn")->payload;
+        $response = $bitso->order_book('btc_mxn')->payload;
 
-       	$this->assertInternalType("array", $response->asks);
-        $this->assertEquals(sizeof($response->asks),3);
-       	$this->assertInternalType("array", $response->bids);
-        $this->assertEquals(sizeof($response->bids),2);
-        $this->assertEquals($response->asks[0]->price, (float)"5632.24");
-        $this->assertEquals($response->asks[0]->amount, (float)"1.34491802");
-        $this->assertEquals($response->bids[0]->price, (float)"6123.55");
-        $this->assertEquals($response->bids[0]->amount, (float)"1.12560000");
+           $this->assertInternalType('array', $response->asks);
+        $this->assertEquals(count($response->asks), 3);
+           $this->assertInternalType('array', $response->bids);
+        $this->assertEquals(count($response->bids), 2);
+        $this->assertEquals($response->asks[0]->price, (float) '5632.24');
+        $this->assertEquals($response->asks[0]->amount, (float) '1.34491802');
+        $this->assertEquals($response->bids[0]->price, (float) '6123.55');
+        $this->assertEquals($response->bids[0]->amount, (float) '1.12560000');
         $this->assertEquals($response->sequence, 27214);
         date_default_timezone_set('UTC');
         $date_time = new DateTime($response->updated_at);
-        #$this->assertInstanceOf($response->updated_at,datetime);
+        //$this->assertInstanceOf($response->updated_at,datetime);
         $this->assertEquals($date_time->format('Y'), 2016);
-        $this->assertEquals($date_time->format('M'), "Apr");
+        $this->assertEquals($date_time->format('M'), 'Apr');
         $this->assertEquals($date_time->format('d'), 8);
         $this->assertEquals($date_time->format('h'), 05);
         $this->assertEquals($date_time->format('i'), 52);
         $this->assertEquals($date_time->format('s'), 31);
 
-        
- 	}
+    }
 
- 	public function testTrades()
-	{
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+    public function testTrades()
+    {
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": [{
            "book": "btc_mxn",
@@ -183,36 +179,35 @@ class resultsTest extends \PHPUnit_Framework_TestCase
            "tid": 55844
            }]
        }');
-       
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('trades')
             ->will($this->returnValue($fake_response));
 
-		$response = $bitso->trades("btc_mxn")->payload[0];
+        $response = $bitso->trades('btc_mxn')->payload[0];
 
-       # $this->assertInstanceOf($response->asks,Array());
-        $this->assertEquals(sizeof($bitso->trades("btc_mxn")->payload),2);
-        $this->assertEquals($response->price, (float)"5545.01");
+       // $this->assertInstanceOf($response->asks,Array());
+        $this->assertEquals(count($bitso->trades('btc_mxn')->payload), 2);
+        $this->assertEquals($response->price, (float) '5545.01');
 
         date_default_timezone_set('UTC');
         $date_time = new DateTime($response->created_at);
-        #$this->assertInstanceOf($response->updated_at,datetime);
+        //$this->assertInstanceOf($response->updated_at,datetime);
         $this->assertEquals($date_time->format('Y'), 2016);
-        $this->assertEquals($date_time->format('M'), "Apr");
+        $this->assertEquals($date_time->format('M'), 'Apr');
         $this->assertEquals($date_time->format('d'), 8);
         $this->assertEquals($date_time->format('h'), 05);
         $this->assertEquals($date_time->format('i'), 52);
-        
- 	}
 
- 	public function testAccountStatus()
-	{
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+    }
 
- 		$fake_response = json_decode('{
+    public function testAccountStatus()
+    {
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
+
+        $fake_response = json_decode('{
         "success": true,
         "payload": {
             "client_id": "1234",
@@ -229,30 +224,29 @@ class resultsTest extends \PHPUnit_Framework_TestCase
         }
     }');
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('account_status')
             ->will($this->returnValue($fake_response));
 
         $response = $bitso->account_status()->payload;
 
-      
-        $this->assertEquals($response->client_id, "1234");
-        #$this->assertInternalType("float", $response->daily_limit);
-        $this->assertEquals($response->daily_limit, (float)"5300.00");
-        $this->assertEquals($response->monthly_limit, (float)"32000.00");
-        $this->assertEquals($response->daily_remaining, (float)"3300.00");
-        $this->assertEquals($response->monthly_remaining, (float)"31000.00");
+        $this->assertEquals($response->client_id, '1234');
+        //$this->assertInternalType("float", $response->daily_limit);
+        $this->assertEquals($response->daily_limit, (float) '5300.00');
+        $this->assertEquals($response->monthly_limit, (float) '32000.00');
+        $this->assertEquals($response->daily_remaining, (float) '3300.00');
+        $this->assertEquals($response->monthly_remaining, (float) '31000.00');
 
     }
 
     public function testBalances()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "balances": [{
@@ -274,30 +268,29 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             }
         }');
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('balances')
             ->will($this->returnValue($fake_response));
 
-       # print_r($bitso->url_request("As","as","As","As"));
-       # print_r($bitso->balances());
+       // print_r($bitso->url_request("As","as","As","As"));
+       // print_r($bitso->balances());
         $response = $bitso->balances()->payload;
 
-      
-        $this->assertEquals($response->balances[0]->available, (float)"75.0000");
-        $this->assertEquals($response->balances[1]->available, (float) "75.12345678");
-        $this->assertEquals($response->balances[0]->locked, (float)"25.1234");
-        $this->assertEquals($response->balances[0]->currency, "mxn");
-       
+        $this->assertEquals($response->balances[0]->available, (float) '75.0000');
+        $this->assertEquals($response->balances[1]->available, (float) '75.12345678');
+        $this->assertEquals($response->balances[0]->locked, (float) '25.1234');
+        $this->assertEquals($response->balances[0]->currency, 'mxn');
 
     }
+
     public function testFees()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "fees": [{
@@ -312,125 +305,119 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             }
         }');
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('fees')
             ->will($this->returnValue($fake_response));
 
         $response = $bitso->fees()->payload;
 
-      
-        $this->assertEquals($response->fees[0]->book, "btc_mxn");
-        $this->assertEquals($response->fees[0]->fee_decimal, (float)"0.0001");
-        $this->assertEquals($response->fees[0]->fee_percent, (float)"0.01");
-        
-      
+        $this->assertEquals($response->fees[0]->book, 'btc_mxn');
+        $this->assertEquals($response->fees[0]->fee_decimal, (float) '0.0001');
+        $this->assertEquals($response->fees[0]->fee_percent, (float) '0.01');
+
     }
+
     public function testLedger()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
-    $string = file_get_contents($root."/BitsoAPI/Test/ledger.json");
- 		
-		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
-	 
+        $root = realpath($_SERVER['DOCUMENT_ROOT']);
+    $string = file_get_contents($root.'/BitsoAPI/Test/ledger.json');
 
- 		$bitso->expects($this->any())
+        $fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
+
+        $bitso->expects($this->any())
             ->method('ledger')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->ledger("btc_mxn")->payload;
+        $response = $bitso->ledger('btc_mxn')->payload;
 
-        #print_r($response[0]->balance_updates[1]->amount);
+        //print_r($response[0]->balance_updates[1]->amount);
 
-      	// for($i=0; $i<sizeof($response);$i++){
-      	// 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
-      	// 		print_r($response[$j]->balance_updates[$j]->amount);
-      	// 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
-      	// 	}
-      	// }
+          // for($i=0; $i<sizeof($response);$i++){
+          // 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
+          // 		print_r($response[$j]->balance_updates[$j]->amount);
+          // 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
+          // 	}
+          // }
 
-        $this->assertEquals($response[0]->balance_updates[1]->amount, (float)"1013.540958479115");
-      
+        $this->assertEquals($response[0]->balance_updates[1]->amount, (float) '1013.540958479115');
+
     }
 
-
         public function testWithdrawals()
-	{
+        {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
-    $string = file_get_contents($root."/BitsoAPI/Test/withdrawals.json");
+        $root = realpath($_SERVER['DOCUMENT_ROOT']);
+    $string = file_get_contents($root.'/BitsoAPI/Test/withdrawals.json');
 
-		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
-	 
+        $fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('withdrawals')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->withdrawals("btc_mxn")->payload;
+        $response = $bitso->withdrawals('btc_mxn')->payload;
 
-        #print_r($response[0]->balance_updates[1]->amount);
+        //print_r($response[0]->balance_updates[1]->amount);
 
-      	// for($i=0; $i<sizeof($response);$i++){
-      	// 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
-      	// 		print_r($response[$j]->balance_updates[$j]->amount);
-      	// 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
-      	// 	}
-      	// }
+          // for($i=0; $i<sizeof($response);$i++){
+          // 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
+          // 		print_r($response[$j]->balance_updates[$j]->amount);
+          // 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
+          // 	}
+          // }
 
-      	$this->assertEquals($response[0]->amount, (float)'0.48650929');
-      	$this->assertEquals($response[1]->amount, (float)'2612.70');
-     	$this->assertEquals($response[2]->amount, (float)'500.00');  
+          $this->assertEquals($response[0]->amount, (float) '0.48650929');
+          $this->assertEquals($response[1]->amount, (float) '2612.70');
+         $this->assertEquals($response[2]->amount, (float) '500.00');
     }
 
-
     public function testFundings()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
- 		$root = realpath($_SERVER["DOCUMENT_ROOT"]);
- 		$string = file_get_contents($root."/BitsoAPI/Test/fundings.json");
-		$fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
-	 
+        $root = realpath($_SERVER['DOCUMENT_ROOT']);
+        $string = file_get_contents($root.'/BitsoAPI/Test/fundings.json');
+        $fake_response = json_decode($string, null, 512, JSON_THROW_ON_ERROR);
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('fundings')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->fundings("btc")->payload;
+        $response = $bitso->fundings('btc')->payload;
 
-        #print_r($response[0]->balance_updates[1]->amount);
+        //print_r($response[0]->balance_updates[1]->amount);
 
-      	// for($i=0; $i<sizeof($response);$i++){
-      	// 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
-      	// 		print_r($response[$j]->balance_updates[$j]->amount);
-      	// 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
-      	// 	}
-      	// }
+          // for($i=0; $i<sizeof($response);$i++){
+          // 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
+          // 		print_r($response[$j]->balance_updates[$j]->amount);
+          // 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
+          // 	}
+          // }
 
-      	$this->assertEquals($response[0]->amount, (float)'0.48650929');
-      	$this->assertEquals($response[1]->amount, (float)'300.15');
+          $this->assertEquals($response[0]->amount, (float) '0.48650929');
+          $this->assertEquals($response[1]->amount, (float) '300.15');
     }
 
         public function testUserTrades()
-	{
+        {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": [{
             "book": "btc_mxn",
@@ -456,39 +443,37 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             "side": "buy"
         }]
     }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('user_trades')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->user_trades("btc_mxn")->payload;
+        $response = $bitso->user_trades('btc_mxn')->payload;
 
-        #print_r($response[0]->balance_updates[1]->amount);
+        //print_r($response[0]->balance_updates[1]->amount);
 
-      	// for($i=0; $i<sizeof($response);$i++){
-      	// 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
-      	// 		print_r($response[$j]->balance_updates[$j]->amount);
-      	// 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
-      	// 	}
-      	// }
+          // for($i=0; $i<sizeof($response);$i++){
+          // 	for($j=0;$j<sizeof($response[$j]->balance_updates);$j++){
+          // 		print_r($response[$j]->balance_updates[$j]->amount);
+          // 		#$this->assertInternalType("float",$response[$j]->balance_updates[$j]->amount);
+          // 	}
+          // }
 
-      	$this->assertEquals($response[0]->minor, (float)"1013.540958479115");
-      	$this->assertEquals($response[0]->major, (float)"-0.25232073");
-      	$this->assertEquals($response[0]->tid, 51756);
-      	$this->assertEquals($response[0]->oid, "19vaqiv72drbphig81d3y1ywri0yg8miihs80ng217drpw7xyl0wmytdhtby2ygk");
+          $this->assertEquals($response[0]->minor, (float) '1013.540958479115');
+          $this->assertEquals($response[0]->major, (float) '-0.25232073');
+          $this->assertEquals($response[0]->tid, 51756);
+          $this->assertEquals($response[0]->oid, '19vaqiv72drbphig81d3y1ywri0yg8miihs80ng217drpw7xyl0wmytdhtby2ygk');
 
-      	
     }
 
     public function testOpenOrders()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": [{
             "book": "btc_mxn",
@@ -528,31 +513,29 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             "type": "limit"
         }]
     }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('open_orders')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->open_orders("btc_mxn")->payload;
+        $response = $bitso->open_orders('btc_mxn')->payload;
 
-      	$this->assertEquals($response[0]->original_amount, (float)"0.01000000");
-      	$this->assertEquals($response[0]->price, (float)"5600.00");
-      	$this->assertEquals($response[0]->type, "limit");
-      	$this->assertEquals($response[0]->oid, "543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v");
-      	$this->assertEquals($response[1]->status, "open");
+          $this->assertEquals($response[0]->original_amount, (float) '0.01000000');
+          $this->assertEquals($response[0]->price, (float) '5600.00');
+          $this->assertEquals($response[0]->type, 'limit');
+          $this->assertEquals($response[0]->oid, '543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v');
+          $this->assertEquals($response[1]->status, 'open');
 
-      	
     }
 
     public function testLookupOrder()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": [{
             "book": "btc_mxn",
@@ -580,30 +563,27 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             "type": "limit"
         }]
     }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('lookup_order')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v','qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1'])->payload;
+        $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v', 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1'])->payload;
 
-      	$this->assertEquals($response[0]->original_amount, (float)"0.01000000");
-      	$this->assertEquals($response[0]->price, (float)"5600.00");
-      	$this->assertEquals($response[0]->type, "limit");
+          $this->assertEquals($response[0]->original_amount, (float) '0.01000000');
+          $this->assertEquals($response[0]->price, (float) '5600.00');
+          $this->assertEquals($response[0]->type, 'limit');
 
-
-      	
     }
 
     public function testCancelOrder()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload":[
                 "543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v",
@@ -611,79 +591,75 @@ class resultsTest extends \PHPUnit_Framework_TestCase
                 "d71e3xy2lowndkfmde6bwkdsvw62my6058e95cbr08eesu0687i5swyot4rf2yf8"
                 ]
         }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('lookup_order')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v','qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1',"d71e3xy2lowndkfmde6bwkdsvw62my6058e95cbr08eesu0687i5swyot4rf2yf8"])->payload;
+        $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v', 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1', 'd71e3xy2lowndkfmde6bwkdsvw62my6058e95cbr08eesu0687i5swyot4rf2yf8'])->payload;
 
-      	$this->assertInternalType("array",$response);
-      	$this->assertEquals(sizeof($response),3);
-      	
+          $this->assertInternalType('array', $response);
+          $this->assertEquals(count($response), 3);
+
     }
 
     public function testPlaceOrder()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": {
             "oid": "qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1"
         }
     }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('place_order')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->place_order(['book'=>'btc_mxn', 'side'=>'buy', 'order_type'=>'limit', 'major'=>'0.1', 'price'=>'5600'])->payload;
+        $response = $bitso->place_order(['book' => 'btc_mxn', 'side' => 'buy', 'order_type' => 'limit', 'major' => '0.1', 'price' => '5600'])->payload;
 
-      	
-      	$this->assertEquals($response->oid,"qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1");
-      	
+          $this->assertEquals($response->oid, 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1');
+
     }
 
     public function testFundingDestination()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "account_identifier_name": "SPEI CLABE",
                 "account_identifier": "646180115400346012"             
             }
         }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('funding_destination')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->funding_destination("mxn")->payload;
+        $response = $bitso->funding_destination('mxn')->payload;
 
-      	$this->assertEquals($response->account_identifier_name,"SPEI CLABE");
-      	
+          $this->assertEquals($response->account_identifier_name, 'SPEI CLABE');
+
     }
 
     public function testBtcWithdrawal()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "wid": "c5b8d7f0768ee91d3b33bee648318688",
@@ -698,26 +674,25 @@ class resultsTest extends \PHPUnit_Framework_TestCase
                 }
             }
         }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('btc_withdrawal')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->btc_withdrawal(['amount'=>'0.48650929', 'address'=>'3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7'])->payload;
+        $response = $bitso->btc_withdrawal(['amount' => '0.48650929', 'address' => '3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7'])->payload;
 
-      	$this->assertEquals($response->amount,(float)"0.48650929");
-      	
+          $this->assertEquals($response->amount, (float) '0.48650929');
+
     }
 
     public function testEthWithdrawal()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
         "success": true,
         "payload": {
             "wid": "c5b8d7f0768ee91d3b33bee648318698",
@@ -732,26 +707,25 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             }
         }
     }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('eth_withdrawal')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->eth_withdrawal(['amount'=>'10.00', 'address'=>'0x55f03a62acc946dedcf8a0c47f16ec3892b29e6d'])->payload;
+        $response = $bitso->eth_withdrawal(['amount' => '10.00', 'address' => '0x55f03a62acc946dedcf8a0c47f16ec3892b29e6d'])->payload;
 
-      	$this->assertEquals($response->amount,(float)"10.00");
-      	
+          $this->assertEquals($response->amount, (float) '10.00');
+
     }
 
     public function testRippleWithdrawal()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "wid": "c5b8d7f0768ee91d3b33bee648318688",
@@ -766,26 +740,25 @@ class resultsTest extends \PHPUnit_Framework_TestCase
                 }
             }
         }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('ripple_withdrawal')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->ripple_withdrawal(['type' => 'btc', 'amount'=>'0.48650929', 'address'=>'rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn'])->payload;
+        $response = $bitso->ripple_withdrawal(['type' => 'btc', 'amount' => '0.48650929', 'address' => 'rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn'])->payload;
 
-      	$this->assertEquals($response->amount,(float)"0.48650929");
-      	
+          $this->assertEquals($response->amount, (float) '0.48650929');
+
     }
 
     public function testSpeiWithdrawal()
-	{
+    {
 
- 		$bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
- 		->setConstructorArgs([self::key, self::secret])
- 		->getMock();
+        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        ->setConstructorArgs([self::key, self::secret])
+        ->getMock();
 
-		$fake_response = json_decode('{
+        $fake_response = json_decode('{
             "success": true,
             "payload": {
                 "wid": "p4u8d7f0768ee91d3b33bee6483132i8",
@@ -805,18 +778,14 @@ class resultsTest extends \PHPUnit_Framework_TestCase
                 }
             }
         }');
-	 
 
- 		$bitso->expects($this->any())
+        $bitso->expects($this->any())
             ->method('spei_withdrawal')
             ->will($this->returnValue($fake_response));
 
-        $response = $bitso->spei_withdrawal(['amount'=>'0.48650929', 'first_names'=>"FRANCISCO", 'last_names'=>"MARQUEZ", 'clabe'=>"012610001967722183"])->payload;
+        $response = $bitso->spei_withdrawal(['amount' => '0.48650929', 'first_names' => 'FRANCISCO', 'last_names' => 'MARQUEZ', 'clabe' => '012610001967722183'])->payload;
 
-      	$this->assertEquals($response->amount,(float)"300.15");
-      	
+          $this->assertEquals($response->amount, (float) '300.15');
+
     }
-
-
-
 }
