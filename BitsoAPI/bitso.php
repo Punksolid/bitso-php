@@ -2,6 +2,9 @@
 
 namespace BitsoAPI;
 
+use Symfony\Component\HttpClient\CurlHttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class bitsoException extends \ErrorException
 {
 }
@@ -238,6 +241,7 @@ class bitso
               'Authorization' => $authHeader,
           ],
       ]);
+
       $balances_array = json_decode($result->getContent(), true);
 
       foreach ($balances_array['payload']['balances'] as $balance) {
@@ -247,6 +251,7 @@ class bitso
               break;
           }
       }
+
 
     return $askedBalance;
   }
@@ -648,10 +653,8 @@ class bitso
       return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
     }
 
-    public function setClient($client)
+    public function setClient(HttpClientInterface $client): void
     {
-        $this->client = $client->create([
-            'base_uri' => $this->url,
-        ]);
+        $this->client = $client;
     }
 }
