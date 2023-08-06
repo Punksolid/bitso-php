@@ -1,10 +1,11 @@
 <?php
-
+// help
 namespace BitsoAPI;
 
 use Symfony\Component\HttpClient\CurlHttpClient;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
+// heklp3l;k;l
+// ahi no
 class bitsoException extends \ErrorException
 {
 }
@@ -20,7 +21,7 @@ class bitso
   //constructor, default is dev url
     private $client;
 
-    public function __construct($key = '', $secret = '', $url = 'https://bitso.com/api/v3')
+    public function __construct($key = '', $secret = '', $url = 'https://bitso.com')
     {
     $this->key = $key;
     $this->secret = $secret;
