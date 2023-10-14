@@ -20,7 +20,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 
     public function testAvailableBooks()
     {
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -62,7 +62,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testTicker()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -94,7 +94,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 
     public function testOrderBook()
     {
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -157,7 +157,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 
     public function testTrades()
     {
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -203,7 +203,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
 
     public function testAccountStatus()
     {
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -242,7 +242,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testBalances()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -286,7 +286,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testFees()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -320,7 +320,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testLedger()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -351,7 +351,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
         public function testWithdrawals()
         {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -383,7 +383,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testFundings()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -413,7 +413,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
         public function testUserTrades()
         {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -469,7 +469,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testOpenOrders()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -531,7 +531,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testLookupOrder()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -579,7 +579,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testCancelOrder()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -606,7 +606,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testPlaceOrder()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -630,7 +630,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testFundingDestination()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -638,7 +638,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
             "success": true,
             "payload": {
                 "account_identifier_name": "SPEI CLABE",
-                "account_identifier": "646180115400346012"             
+                "account_identifier": "646180115400346012"
             }
         }');
 
@@ -655,7 +655,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testBtcWithdrawal()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -688,7 +688,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testEthWithdrawal()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -721,7 +721,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testRippleWithdrawal()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 
@@ -754,7 +754,7 @@ class resultsTest extends \PHPUnit_Framework_TestCase
     public function testSpeiWithdrawal()
     {
 
-        $bitso = $this->getMockBuilder(\BitsoAPI\bitso::class)
+        $bitso = $this->getMockBuilder(\BitsoAPI\Bitso::class)
         ->setConstructorArgs([self::key, self::secret])
         ->getMock();
 

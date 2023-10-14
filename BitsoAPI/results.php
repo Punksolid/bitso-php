@@ -2,7 +2,7 @@
 
 namespace BitsoAPI;
 
-include 'bitso.php';
+include 'Bitso.php';
 
 class results
 {
@@ -31,8 +31,8 @@ class results
         $o = 0;
         $p = 0;
 
-        $bitsoPublic = new bitso('https://dev.bitso.com/api/v3');
-        $bitso = new bitso(self::key, self::secret, 'https://dev.bitso.com/api/v3');
+        $bitsoPublic = new Bitso('https://dev.bitso.com/api/v3');
+        $bitso = new Bitso(self::key, self::secret, 'https://dev.bitso.com/api/v3');
 
         $order_book = $bitsoPublic->order_book(['book' => 'btc_mxn', 'aggregate' => 'True']);
 

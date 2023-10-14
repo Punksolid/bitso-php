@@ -20,20 +20,22 @@ or equivalently in your composer.json file:
 ```php
 require 'vendor/autoload.php'
 
-$bitso = new BitsoAPI\bitso();
+$bitso = new BitsoAPI\Bitso();
 ```
 The production API is set as default, to use Dev API:
+
 ```php
 require 'vendor/autoload.php'
 
-$bitso = new BitsoAPI\bitso('','',$url);
+$bitso = new BitsoAPI\Bitso('','',$url);
 ```
 
 # Private API Usage #
+
 ```php
 require 'vendor/autoload.php'
 
-$bitso = new BitsoAPI\bitso(API_KEY, API_SECRET, URL);
+$bitso = new BitsoAPI\Bitso(API_KEY, API_SECRET, URL);
 ```
 
 See note above on how to use Dev API

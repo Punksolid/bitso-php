@@ -2,12 +2,12 @@
 
 namespace BitsoAPI;
 
-include 'bitso.php';
+include 'Bitso.php';
 // your api credentials
 $key = '';
 $secret = '';
 
-$bitso = new bitso($key, $secret, 'https://dev.bitso.com/api/v3');
+$bitso = new Bitso($key, $secret, 'https://dev.bitso.com/api/v3');
 $order_book = $bitso->order_book(['book' => 'btc_mxn', 'aggregate' => 'True']);
 $ticker = $bitso->ticker(['book' => 'btc_mxn']);
 $trades = $bitso->trades(['book' => 'btc_mxn', 'limit' => '2']);
