@@ -8,21 +8,12 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class Bitso
 {
-    protected $key;
-
-    protected $secret;
-
-    protected $url;
-
     //constructor, default is dev url
-    private $client;
+    private \Symfony\Contracts\HttpClient\HttpClientInterface $client;
 
-    public function __construct($key = '', $secret = '', $url = 'https://bitso.com')
+    public function __construct(protected $key = '', protected $secret = '', protected $url = 'https://bitso.com')
     {
 
-        $this->key = $key;
-        $this->secret = $secret;
-        $this->url = $url;
         $this->client = HttpClient::create([
             'base_uri' => $url,
         ]);
@@ -61,7 +52,7 @@ class Bitso
     public function checkAndDecode($result)
     {
 
-        $result = json_decode($result, true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode((string) $result, true, 512, JSON_THROW_ON_ERROR);
         if ($result['success'] != 1) {
             throw new ErrorException($result->error->message, 1);
         }
@@ -206,7 +197,7 @@ class Bitso
             ]
         );
 
-        return json_decode($result->getContent(), true);
+        return json_decode($result->getContent(), true, 512, JSON_THROW_ON_ERROR);
     }
 
     //#####           #######
@@ -254,7 +245,7 @@ class Bitso
             ['headers' => ['Authorization' => $authHeader,]
             ]);
 
-        $balances_array = json_decode($result->getContent(), true);
+        $balances_array = json_decode($result->getContent(), true, 512, JSON_THROW_ON_ERROR);
 
         foreach ($balances_array['payload']['balances'] as $balance) {
             if ($balance['currency'] == $currency) {
