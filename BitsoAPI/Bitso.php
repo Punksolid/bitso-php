@@ -594,4 +594,12 @@ class Bitso
 
         return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
+
+    public function setCredentials($key, $secret): static
+    {
+        $this->key = $key;
+        $this->secret = $secret;
+
+        return $this;
+    }
 }
