@@ -1,5 +1,5 @@
 <?php
-// help
+
 namespace BitsoAPI;
 
 use ErrorException;
@@ -9,7 +9,7 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class Bitso
 {
     //constructor, default is dev url
-    private \Symfony\Contracts\HttpClient\HttpClientInterface $client;
+    private readonly HttpClientInterface $client;
 
     public function __construct(protected $key = '', protected $secret = '', protected $url = 'https://bitso.com')
     {
@@ -44,7 +44,7 @@ class Bitso
 
     }
 
-    private function makeNonce()
+    private function makeNonce(): float
     {
         return round(microtime(true) * 1000);
     }
@@ -73,9 +73,8 @@ class Bitso
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
-//        dd($path);
         $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload);
-//        dd($result);
+
         return $this->checkAndDecode($result);
     }
 
@@ -86,16 +85,7 @@ class Bitso
 
     private function makeAuthHeader($message, $signature): string
     {
-        $format = 'Bitso %s:%s:%s';
-
-        return sprintf($format, $this->key, $nonce, $signature);
-    }
-
-    private function buildSignature(): string
-    {
-        // nonce  +  HTTP method  +  request path  +  JSON payload
-        $message = $this->makeMessage('GET', '/api/v3/ticker/', '');
-        return hash_hmac('sha256', $message, $this->secret);
+        return sprintf('Bitso %s:%s:%s', $this->key, $this->makeNonce(), $signature);
     }
 
     public function ticker($book)
@@ -110,8 +100,7 @@ class Bitso
             A bitso.Ticker instance.
         */
         $message = $this->makeMessage('GET', '/api/v3/ticker/', '');
-        $signature = hash_hmac('sha256', $message, $this->secret);
-        $authHeader = sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
+        $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $authHeader = $this->makeAuthHeader($message, $signature);
         $result = $this->client->request('GET', $this->url . '/api/v3/ticker/', [
             'headers' => [
@@ -123,15 +112,11 @@ class Bitso
         return $this->checkAndDecode($result->getContent());
     }
 
-    public function makeRequest()
-    {
-
-    }
-
     public function order_book($params)
     {
-        /*
-        Get a public Bitso order book with a list of all open orders in the specified book
+
+    /*
+      Get a public Bitso order book with a list of all open orders in the specified book
           Args:
             book (str):
               Specifies which book to use. Default is btc_mxn
@@ -139,10 +124,11 @@ class Bitso
               Specifies if orders should be aggregated by price
 
           Returns:
-            A bitso.OrderBook instance. */
+            A bitso.OrderBook instance.
+        */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/order_book/?' . $parameters;
+        $path = $this->url . '/api/v3/order_book/?' . $parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -171,7 +157,7 @@ class Bitso
             A list of bitso.Trades instances. */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/trades/?' . $parameters;
+        $path = $this->url . '/api/v3/trades/?' . $parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -181,13 +167,12 @@ class Bitso
     }
 
     //gets data and makes request
-    public function getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type)
+    public function getData($path, $RequestPath, $HTTPMethod, $JSONPayload = ''): array
     {
         $nonce = $this->makeNonce();
         $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
-        $signature = hash_hmac('sha256', $message, $this->secret);
-        $format = 'Bitso %s:%s:%s';
-        $authHeader = sprintf($format, $this->key, $nonce, $signature);
+        $signature = hash_hmac('sha256', $message, (string) $this->secret);
+        $authHeader = sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
 
         $result = $this->client->request(
             $HTTPMethod,
@@ -204,25 +189,25 @@ class Bitso
     //##### PRIVATE QUERIES #######
     //#####           #######
 
-    public function account_status()
+    public function account_status(): array
     {
         /*
         Get a user's account status.
           Returns:
             A bitso.AccountStatus instance. */
 
-        $path = $this->url . '/account_status/';
+        $path = $this->url . '/api/v3/account_status/';
         $RequestPath = '/api/v3/account_status/';
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
 
     }
 
-    public function balances($currency = 'mxn')
+    public function balances(string $asked_currency = null)
     {
         /*
         Get a user's balance.
@@ -235,10 +220,9 @@ class Bitso
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
-        $type = 'PRIVATE';
         $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
         $format = 'Bitso %s:%s:%s';
-        $signature = hash_hmac('sha256', $message, $this->secret);
+        $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $authHeader = sprintf($format, $this->key, $nonce, $signature);
         $result = $this->client->request('GET',
             $this->url . '/api/v3/balance/',
@@ -246,16 +230,93 @@ class Bitso
             ]);
 
         $balances_array = json_decode($result->getContent(), true, 512, JSON_THROW_ON_ERROR);
+        $balances_array = $balances_array['payload']['balances'];
 
-        foreach ($balances_array['payload']['balances'] as $balance) {
-            if ($balance['currency'] == $currency) {
+        if ($asked_currency !== null) {
+            $balances_array = array_filter($balances_array, fn($balance) => $balance['currency'] === $asked_currency);
+        }
 
-                $askedBalance = $balance['total'];
-                break;
+        return $balances_array;
+    }
+
+    public function accountValue($in_currency = 'usd'): int
+    {
+        $fallback_currency_converted_to = 'mxn';
+        $sub_accounts = $this->balances();
+
+        $accounts = [];
+        foreach ($sub_accounts as $sub_account) {
+            $currency = $sub_account['currency'];
+            $total = $sub_account['total'];
+            if ($total == 0) { // skip zero balances
+                continue;
+            }
+            $accounts[$currency]['usd'] = 0;
+            $accounts[$currency]['mxn'] = 0;
+
+            if ($currency === $in_currency) {
+
+                $accounts[$currency][$in_currency] = $total;
+                $account_value[$currency] = $total;
+                continue;
+            }
+
+            if ($currency === $in_currency) {
+
+                $accounts[$currency][$in_currency] = $total;
+                $account_value[$currency] = $total;
+                continue;
+            }
+
+
+
+            try {
+                $book = $currency . '_' . $in_currency;
+                $book_price = $this->getPriceForBook($book);
+                $accounts[$currency][$in_currency] += $total * $book_price;
+
+            } catch (\Throwable) {
+                try {
+                    $book = $currency . '_' . $fallback_currency_converted_to;
+                    $book_price_in_fallback = $this->getPriceForBook($book);
+                    $accounts[$currency][$fallback_currency_converted_to] += $total * $book_price_in_fallback;
+                } catch (\Throwable) {
+                    $book =  'usd' . '_' . $currency ; // ars
+
+                    $book_price_in_fallback = $this->getPriceForBook($book);
+
+                    $accounts[$currency]['usd'] = $total / $book_price_in_fallback;
+                }
             }
         }
 
-        return $askedBalance;
+        return $this->getTotalInMxn($accounts);
+    }
+
+    public function getTotalInMxn($accounts)
+    {
+
+        $sum_in_mxn = 0;
+        $sum_in_usd = 0;
+        foreach ($accounts as $account)
+        {
+
+            $sum_in_mxn += $account['mxn'];
+            $sum_in_usd += $account['usd'];
+        }
+
+        // convert usd to mxn
+        $usd_to_mxn = $this->getPriceForBook('usd_mxn');
+
+        return $sum_in_mxn + $sum_in_usd * $usd_to_mxn;
+    }
+
+    public function getPriceForBook($book)
+    {
+
+        $ticker = $this->ticker($book);
+
+        return $ticker['payload']['last'];
     }
 
     public function fees(): array
@@ -274,16 +335,17 @@ class Bitso
         $type = 'PRIVATE';
 
         $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
-        $signature = hash_hmac('sha256', $message, $this->secret);
+        $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $format = 'Bitso %s:%s:%s';
-        $authHeader = sprintf($format, $this->key, $nonce, $signature);
 
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function ledger($params)
+    public function ledger($params = null): array
     {
+        if ($params === null) {
+            $params = ['limit' => 1];
+        }
         /*
         Get the ledger of user operations
         Args:
@@ -303,57 +365,51 @@ class Bitso
         */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/ledger/?' . $parameters;
+        $path = $this->url . '/api/v3/ledger/?' . $parameters;
         $RequestPath = '/api/v3/ledger/?' . $parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function withdrawals($params)
+    /**
+     * @see https://docs.bitso.com/bitso-payouts-funding/docs/list-your-withdrawals#query-parameters
+     *
+     * @param $withdrawal_id
+     * @param $limit
+     * @param $marker
+     * @return array
+     * @throws \JsonException
+     */
+    public function withdrawals($withdrawal_id = null, $origin_id = null, $status = null, $limit = 25, $method = null, $marker = null): array
     {
-        $parameters = null;
-        /*
-        Get the ledger of user operations
-        Args:
-          wids (list, optional):
-            Specifies which withdrawal objects to return
-          marker (str, optional):
-            Returns objects that are older or newer (depending on 'sort') than the object which
-            has the marker value as ID
-          limit (int, optional):
-            Limit the number of results to parameter value, max=100, default=25
-          sort (str, optional):
-            Sorting by datetime: 'asc', 'desc'
-            Defuault is 'desc'
-        Returns:
-          A list bitso.Withdrawal instances.
-        */
-        if (in_array('wids', $params)) {
-            $ids = $params('wids');
-            unset($params['wids']);
-            $id_nums = implode('', $ids);
-            $path = $this->url . '/withdrawals/' . $id_nums . '/?' . $parameters;
-            $RequestPath = '/api/v3/withdrawals/' . $id_nums . '/?' . $parameters;
-        }
+
+        $params = [
+            'withdrawal_id' => $withdrawal_id,
+            'origin_id' => $origin_id,
+            'status' => $status,
+            'limit' => $limit,
+            'method' => $method,
+            'marker' => $marker,
+        ];
+
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/withdrawals/?' . $parameters;
+
+        $path = $this->url . '/api/v3/withdrawals/?' . $parameters;
         $RequestPath = '/api/v3/withdrawals/?' . $parameters;
-
-        $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod );
     }
 
-    public function fundings($params)
+    public function fundings($params = []): array
     {
-        $parameters = null;
+        if ($params === []) {
+            $params = ['limit' => 1];
+        }
         /*
         Get the ledger of user operations
         Args:
@@ -373,9 +429,6 @@ class Bitso
         if (in_array('fids', $params)) {
             $ids = $params('fids');
             unset($params['fids']);
-            $id_nums = implode('', $ids);
-            $path = $this->url . '/withdrawals/' . $id_nums . '/?' . $parameters;
-            $RequestPath = '/api/v3/withdrawals/' . $id_nums . '/?' . $parameters;
         }
         $parameters = http_build_query($params, '', '&');
         $path = $this->url . '/fundings/?' . $parameters;
@@ -385,25 +438,10 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function order_trades($id)
-    {
-        /*
-          Returns all Trades Associated with an order
-        */
-        $path = $this->url . '/order_trades/' . $id;
-        $RequestPath = '/api/v3/order_trades/' . $id;
-        $nonce = $this->makeNonce();
-        $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $type = 'PRIVATE';
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-    }
-
-    public function user_trades($params, $ids = [])
+    public function user_trades($params = [], $ids = []): array
     {
         /*
         Get a list of the user's transactions
@@ -431,10 +469,10 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function open_orders($params)
+    public function open_orders($params): array
     {
         /*
         Get a list of the user's open orders
@@ -453,7 +491,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function lookup_order($ids)
@@ -475,10 +513,10 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function cancel_order($ids)
+    public function cancel_order($ids): array
     {
         /*
         Cancels an open order
@@ -502,10 +540,10 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function place_order($params)
+    public function place_order($params): array
     {
         /*
         Places a buy limit order.
@@ -525,17 +563,17 @@ class Bitso
           Returns:
             A bitso.Order instance.
         */
-        $path = $this->url . '/orders/';
+        $path = $this->url . '/api/v3/orders/';
         $RequestPath = '/api/v3/orders/';
         $nonce = $this->makeNonce();
         $HTTPMethod = 'POST';
         $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function funding_destination($params)
+    public function funding_destination($params): array
     {
         /*
         Returns account funding information for specified currencies.
@@ -554,116 +592,6 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-    }
-
-    public function btc_withdrawal($params)
-    {
-        /*
-    Triggers a bitcoin withdrawal from your account
-      Args:
-        amount (str):
-          The amount of BTC to withdraw from your account
-        address (str):
-          The Bitcoin address to send the amount to
-
-      Returns:
-        ok
-    */
-        $path = $this->url . '/bitcoin_withdrawal/';
-        $RequestPath = '/api/v3/bitcoin_withdrawal/';
-        $nonce = $this->makeNonce();
-        $HTTPMethod = 'POST';
-        $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-        $type = 'PRIVATE';
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-    }
-
-    public function eth_withdrawal($params)
-    {
-        /*
-        Triggers an ether withdrawal from your account
-          Args:
-            amount (str):
-              The amount of BTC to withdraw from your account
-            address (str):
-              The Bitcoin address to send the amount to
-
-          Returns:
-            ok
-        */
-        $path = $this->url . '/ether_withdrawal/';
-        $RequestPath = '/api/v3/ether_withdrawal/';
-        $nonce = $this->makeNonce();
-        $HTTPMethod = 'POST';
-        $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-        $type = 'PRIVATE';
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-    }
-
-    public function ripple_withdrawal($params)
-    {
-        /*
-      Triggers a ripple withdrawal from your account
-        Args:
-          currency (str):
-            The currency to withdraw
-          amount (str):
-            The amount of BTC to withdraw from your account
-          address (str):
-            The ripple address to send the amount to
-
-        Returns:
-          ok
-      */
-        $path = $this->url . '/ripple_withdrawal/';
-        $RequestPath = '/api/v3/ripple_withdrawal/';
-        $nonce = $this->makeNonce();
-        $HTTPMethod = 'POST';
-        $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-        $type = 'PRIVATE';
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-
-    }
-
-    public function spei_withdrawal($params)
-    {
-        /*
-      Triggers a SPEI withdrawal from your account.
-        These withdrawals are immediate during banking hours for some banks (M-F 9:00AM - 5:00PM Mexico City Time), 24 hours for others.
-        Args:
-          amount (str):
-            The amount of MXN to withdraw from your account
-          recipient_given_names (str):
-            The recipient's first and middle name(s)
-          recipient_family_names (str):
-            The recipient's last names
-          clabe (str):
-            The CLABE number where the funds will be sent to
-            https://en.wikipedia.org/wiki/CLABE
-          notes_ref (str):
-            The alpha-numeric reference number for this SPEI
-          numeric_ref (str):
-            The numeric reference for this SPEI
-
-        Returns:
-          ok
-      */
-        $path = $this->url . '/spei_withdrawal/';
-        $RequestPath = '/api/v3/spei_withdrawal/';
-        $nonce = $this->makeNonce();
-        $HTTPMethod = 'POST';
-        $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-        $type = 'PRIVATE';
-
-        return $this->getData($nonce, $path, $RequestPath, $HTTPMethod, $JSONPayload, $type);
-    }
-
-    public function setClient(HttpClientInterface $client): void
-    {
-        $this->client = $client;
+        return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 }
