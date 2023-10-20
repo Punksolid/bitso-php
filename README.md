@@ -1,10 +1,10 @@
-# bitso-php #
+# bitso php #
 
 A php wrapper for the [Bitso API](https://bitso.com/api_info/). 
 
 
 # Installation #
-To install the bitso-php api wrapper:
+To install the bitso php api wrapper:
 `$ composer require punksolid/bitso:*`
 or equivalently in your composer.json file:
 ```json
