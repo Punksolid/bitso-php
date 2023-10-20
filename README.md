@@ -5,12 +5,12 @@ A php wrapper for the [Bitso API](https://bitso.com/api_info/).
 
 # Installation #
 To install the bitso-php api wrapper:
-`$ composer require bitso/bitso-php:*`
+`$ composer require punksolid/bitso:*`
 or equivalently in your composer.json file:
 ```json
 {
     "require": {
-        "bitso/bitso-php": "dev-master"
+        "punksolid/bitso": "dev-master"
     }
 }
 ```
@@ -61,9 +61,9 @@ Moreover, for methods such as lookup order, cancel order, there is no array of p
 $books = $bitso->available_books();
 
 ##sample usage for minimum amount of btc_mxn (0)
-$books->payload[0]->minimum_amount;
+$books['payload'][0]->minimum_amount;
 ##for minimum amount of eth_mxn (1)
-$books->payload[1]->minimum_amount;
+$books['payload'][1]->minimum_amount;
 ```
 
 ### Ticker ###
@@ -76,7 +76,7 @@ $books->payload[1]->minimum_amount;
 $ticker = $bitso->ticker(["book"=>"btc_mxn"]);
 
 ##sample usage for ask price of btc_mxn
-$ticker->payload->ask;
+$ticker['payload']->ask;
  ```
 
 ### Order Book ###
@@ -92,7 +92,7 @@ $ticker->payload->ask;
 $ob = $bitso->order_book(["book"=>"btc_mxn","aggregate"=> "True"]);
 
 ## sample usage for array of asks for btc_mxn
-$ob->payload->asks;
+$ob['payload']->asks;
 ```
 
 ### Trades ###
@@ -112,7 +112,7 @@ $ob->payload->asks;
 $trades = $bitso->trades(["book"=>"btc_mxn"]);
 
 ##sample usage to get array of trades 
-$trades->payload;
+$trades['payload'];
 
 ```
 
@@ -130,7 +130,7 @@ with your [Bitso credentials](https://bitso.com/api_info#generating-api-keys)
 $status = $bitso->account_status();
 
 ##sample usage for account status array
-$status->payload;
+$status['payload'];
 
 ```
 
@@ -143,7 +143,7 @@ $status->payload;
 $balances = $bitso->balances();
 
 ##sample usage for account balances array
-$balances->payload->balances;
+$balances['payload']->balances;
 
 ```
 
@@ -154,7 +154,7 @@ $balances->payload->balances;
 $fees = $bitso->fees();
 
 ##sample usage for fees array
-$fees->payload;
+$fees['payload'];
 
 ```
 
@@ -173,7 +173,7 @@ $fees->payload;
 $ledger = $bitso->ledger(["limit"=>"15"]);
 
 ##sample usage for ledger array of size determined by limit
-$ledger->payload;
+$ledger['payload'];
 ```
 
 ### Withdrawals ###
@@ -194,7 +194,7 @@ $ledger->payload;
 $withdrawals = $bitso->withdrawals(["limit"=>"20","wids"=>"ids"));
 
 ##sample usage for withdrawals array of size determined by limit
-$withdrawals->payload;
+$withdrawals['payload'];
 ```
 
 ### Fundings ###
@@ -215,7 +215,7 @@ $withdrawals->payload;
 $fundings = $bitso->fundings(["limit"=>"20","fids"->"ids"));
 
 ##sample usage for fundings array of size determined by limit
-$fundings->payload;
+$fundings['payload'];
 ```
 
 
@@ -239,7 +239,7 @@ $fundings->payload;
 $user_trades = $bitso->user_trades(['book'=>'btc_mxn']);
 
 ##sample usage for getting array of user trades
-$user_trades->payload;
+$user_trades['payload'];
 
 
 ```
@@ -261,7 +261,7 @@ $user_trades->payload;
 $open_orders = $bitso->open_orders(['book'=>'btc_mxn']);
 
 ##sample usage for getting array of open orders
-$open_orders->payload;
+$open_orders['payload'];
 ```
 
 ### Lookup Order ###
@@ -274,10 +274,10 @@ $open_orders->payload;
 $lookup_order = $bitso->lookup_order([oids]);
 
 ##sample usage for getting status of a specific order (if one oids is passed in)
-$lookup_order->payload->status;
+$lookup_order['payload']->status;
 
 ##sample usage for getting status of a specific order (if more than one oids are passed in)
-$lookup_order->payload[i]->status;
+$lookup_order['payload'][i]->status;
 ```
 
 ### Cancel Order ###
