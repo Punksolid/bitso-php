@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace BitsoAPI;
 
 use ErrorException;
@@ -13,7 +15,6 @@ class Bitso
 
     public function __construct(protected $key = '', protected $secret = '', protected $url = 'https://bitso.com')
     {
-
         $this->client = HttpClient::create([
             'base_uri' => $url,
         ]);
@@ -22,13 +23,13 @@ class Bitso
     //function to perform curl url request depending on type and method
     public function url_request($type, $path, $HTTPMethod, $JSONPayload, $authHeader = ''): string
     {
-        if ($type == 'PUBLIC') {
+        if ($type === 'PUBLIC') {
             $response = $this->client->request('GET', $path);
 
             return $response->getContent();
         }
 
-        if ($type == 'PRIVATE') {
+        if ($type === 'PRIVATE') {
             $options = ['headers' => ['Authorization' => $authHeader, 'Content-Type' => 'application/json']];
 
             if ($HTTPMethod === 'GET' or $HTTPMethod === 'DELETE') {
@@ -41,20 +42,13 @@ class Bitso
         }
 
         return $response->getContent();
-
-    }
-
-    private function makeNonce(): float
-    {
-        return round(microtime(true) * 1000);
     }
 
     public function checkAndDecode($result)
     {
-
         $result = json_decode((string) $result, true, 512, JSON_THROW_ON_ERROR);
-        if ($result['success'] != 1) {
-            throw new ErrorException($result->error->message, 1);
+        if ($result['success'] !== true) {
+            throw new ErrorException($result['error']['message'], 1);
         }
 
         return $result;
@@ -69,23 +63,13 @@ class Bitso
         Returns:
          A list of bitso.AvilableBook instances */
 
-        $path = $this->url . '/api/v3/available_books/';
+        $path = $this->url.'/api/v3/available_books/';
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
         $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload);
 
         return $this->checkAndDecode($result);
-    }
-
-    private function makeMessage($HTTPMethod, $RequestPath, $JSONPayload = ''): string
-    {
-        return $this->makeNonce() . $HTTPMethod . $RequestPath . $JSONPayload;
-    }
-
-    private function makeAuthHeader($message, $signature): string
-    {
-        return sprintf('Bitso %s:%s:%s', $this->key, $this->makeNonce(), $signature);
     }
 
     public function ticker($book)
@@ -102,33 +86,33 @@ class Bitso
         $message = $this->makeMessage('GET', '/api/v3/ticker/', '');
         $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $authHeader = $this->makeAuthHeader($message, $signature);
-        $result = $this->client->request('GET', $this->url . '/api/v3/ticker/', [
+        $result = $this->client->request('GET', $this->url.'/api/v3/ticker/', [
             'headers' => [
-                'Authorization' => $authHeader
+                'Authorization' => $authHeader,
             ], 'query' => [
-                'book' => $book
-            ]
+                'book' => $book,
+            ],
         ]);
+
         return $this->checkAndDecode($result->getContent());
     }
 
     public function order_book($params)
     {
+        /*
+          Get a public Bitso order book with a list of all open orders in the specified book
+              Args:
+                book (str):
+                  Specifies which book to use. Default is btc_mxn
+                aggregate (bool):
+                  Specifies if orders should be aggregated by price
 
-    /*
-      Get a public Bitso order book with a list of all open orders in the specified book
-          Args:
-            book (str):
-              Specifies which book to use. Default is btc_mxn
-            aggregate (bool):
-              Specifies if orders should be aggregated by price
-
-          Returns:
-            A bitso.OrderBook instance.
-        */
+              Returns:
+                A bitso.OrderBook instance.
+            */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/api/v3/order_book/?' . $parameters;
+        $path = $this->url.'/api/v3/order_book/?'.$parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -157,7 +141,7 @@ class Bitso
             A list of bitso.Trades instances. */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/api/v3/trades/?' . $parameters;
+        $path = $this->url.'/api/v3/trades/?'.$parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -170,15 +154,15 @@ class Bitso
     public function getData($path, $RequestPath, $HTTPMethod, $JSONPayload = ''): array
     {
         $nonce = $this->makeNonce();
-        $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
+        $message = $nonce.$HTTPMethod.$RequestPath.$JSONPayload;
         $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $authHeader = sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
 
         $result = $this->client->request(
             $HTTPMethod,
-            $this->url . $RequestPath,
+            $this->url.$RequestPath,
             [
-                'headers' => ['Authorization' => $authHeader]
+                'headers' => ['Authorization' => $authHeader],
             ]
         );
 
@@ -196,7 +180,7 @@ class Bitso
           Returns:
             A bitso.AccountStatus instance. */
 
-        $path = $this->url . '/api/v3/account_status/';
+        $path = $this->url.'/api/v3/account_status/';
         $RequestPath = '/api/v3/account_status/';
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
@@ -204,10 +188,9 @@ class Bitso
         $type = 'PRIVATE';
 
         return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
-
     }
 
-    public function balances(string $asked_currency = null)
+    public function balances(?string $asked_currency = null)
     {
         /*
         Get a user's balance.
@@ -220,20 +203,22 @@ class Bitso
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
-        $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
+        $message = $nonce.$HTTPMethod.$RequestPath.$JSONPayload;
         $format = 'Bitso %s:%s:%s';
         $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $authHeader = sprintf($format, $this->key, $nonce, $signature);
-        $result = $this->client->request('GET',
-            $this->url . '/api/v3/balance/',
-            ['headers' => ['Authorization' => $authHeader,]
-            ]);
+        $result = $this->client->request(
+            'GET',
+            $this->url.'/api/v3/balance/',
+            ['headers' => ['Authorization' => $authHeader],
+            ]
+        );
 
         $balances_array = json_decode($result->getContent(), true, 512, JSON_THROW_ON_ERROR);
         $balances_array = $balances_array['payload']['balances'];
 
         if ($asked_currency !== null) {
-            $balances_array = array_filter($balances_array, fn($balance) => $balance['currency'] === $asked_currency);
+            $balances_array = array_filter($balances_array, fn ($balance) => $balance['currency'] === $asked_currency);
         }
 
         return $balances_array;
@@ -248,40 +233,37 @@ class Bitso
         foreach ($sub_accounts as $sub_account) {
             $currency = $sub_account['currency'];
             $total = $sub_account['total'];
-            if ($total == 0) { // skip zero balances
+            if ($total === 0) { // skip zero balances
                 continue;
             }
             $accounts[$currency]['usd'] = 0;
             $accounts[$currency]['mxn'] = 0;
 
             if ($currency === $in_currency) {
-
                 $accounts[$currency][$in_currency] = $total;
                 $account_value[$currency] = $total;
+
                 continue;
             }
 
             if ($currency === $in_currency) {
-
                 $accounts[$currency][$in_currency] = $total;
                 $account_value[$currency] = $total;
+
                 continue;
             }
 
-
-
             try {
-                $book = $currency . '_' . $in_currency;
+                $book = $currency.'_'.$in_currency;
                 $book_price = $this->getPriceForBook($book);
                 $accounts[$currency][$in_currency] += $total * $book_price;
-
             } catch (\Throwable) {
                 try {
-                    $book = $currency . '_' . $fallback_currency_converted_to;
+                    $book = $currency.'_'.$fallback_currency_converted_to;
                     $book_price_in_fallback = $this->getPriceForBook($book);
                     $accounts[$currency][$fallback_currency_converted_to] += $total * $book_price_in_fallback;
                 } catch (\Throwable) {
-                    $book =  'usd' . '_' . $currency ; // ars
+                    $book = 'usd'.'_'.$currency; // ars
 
                     $book_price_in_fallback = $this->getPriceForBook($book);
 
@@ -295,12 +277,9 @@ class Bitso
 
     public function getTotalInMxn($accounts)
     {
-
         $sum_in_mxn = 0;
         $sum_in_usd = 0;
-        foreach ($accounts as $account)
-        {
-
+        foreach ($accounts as $account) {
             $sum_in_mxn += $account['mxn'];
             $sum_in_usd += $account['usd'];
         }
@@ -313,7 +292,6 @@ class Bitso
 
     public function getPriceForBook($book)
     {
-
         $ticker = $this->ticker($book);
 
         return $ticker['payload']['last'];
@@ -327,14 +305,14 @@ class Bitso
           Returns:
             A list bitso.Fees instances.
         */
-        $path = $this->url . '/api/v3/fees/';
+        $path = $this->url.'/api/v3/fees/';
         $RequestPath = '/api/v3/fees/';
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
+        $message = $nonce.$HTTPMethod.$RequestPath.$JSONPayload;
         $signature = hash_hmac('sha256', $message, (string) $this->secret);
         $format = 'Bitso %s:%s:%s';
 
@@ -365,8 +343,8 @@ class Bitso
         */
 
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/api/v3/ledger/?' . $parameters;
-        $RequestPath = '/api/v3/ledger/?' . $parameters;
+        $path = $this->url.'/api/v3/ledger/?'.$parameters;
+        $RequestPath = '/api/v3/ledger/?'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -378,15 +356,10 @@ class Bitso
     /**
      * @see https://docs.bitso.com/bitso-payouts-funding/docs/list-your-withdrawals#query-parameters
      *
-     * @param $withdrawal_id
-     * @param $limit
-     * @param $marker
-     * @return array
      * @throws \JsonException
      */
     public function withdrawals($withdrawal_id = null, $origin_id = null, $status = null, $limit = 25, $method = null, $marker = null): array
     {
-
         $params = [
             'withdrawal_id' => $withdrawal_id,
             'origin_id' => $origin_id,
@@ -398,11 +371,11 @@ class Bitso
 
         $parameters = http_build_query($params, '', '&');
 
-        $path = $this->url . '/api/v3/withdrawals/?' . $parameters;
-        $RequestPath = '/api/v3/withdrawals/?' . $parameters;
+        $path = $this->url.'/api/v3/withdrawals/?'.$parameters;
+        $RequestPath = '/api/v3/withdrawals/?'.$parameters;
         $HTTPMethod = 'GET';
 
-        return $this->getData($path, $RequestPath, $HTTPMethod );
+        return $this->getData($path, $RequestPath, $HTTPMethod);
     }
 
     public function fundings($params = []): array
@@ -431,8 +404,8 @@ class Bitso
             unset($params['fids']);
         }
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/fundings/?' . $parameters;
-        $RequestPath = '/api/v3/fundings/?' . $parameters;
+        $path = $this->url.'/fundings/?'.$parameters;
+        $RequestPath = '/api/v3/fundings/?'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -462,8 +435,8 @@ class Bitso
         */
         $id_nums = implode('', $ids);
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/user_trades/' . $id_nums . '/?' . $parameters;
-        $RequestPath = '/api/v3/user_trades/' . $id_nums . '/?' . $parameters;
+        $path = $this->url.'/user_trades/'.$id_nums.'/?'.$parameters;
+        $RequestPath = '/api/v3/user_trades/'.$id_nums.'/?'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -484,8 +457,8 @@ class Bitso
           A list of bitso.Order instances.
         */
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/open_orders/?' . $parameters;
-        $RequestPath = '/api/v3/open_orders/?' . $parameters;
+        $path = $this->url.'/open_orders/?'.$parameters;
+        $RequestPath = '/api/v3/open_orders/?'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -506,8 +479,8 @@ class Bitso
           A list of bitso.Order instances.
         */
         $parameters = implode(',', $ids);
-        $path = $this->url . '/orders/' . $parameters;
-        $RequestPath = '/api/v3/orders/' . $parameters;
+        $path = $this->url.'/orders/'.$parameters;
+        $RequestPath = '/api/v3/orders/'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -533,8 +506,8 @@ class Bitso
             $parameters = implode(',', $ids);
         }
 
-        $path = $this->url . '/orders/' . $parameters;
-        $RequestPath = '/api/v3/orders/' . $parameters;
+        $path = $this->url.'/orders/'.$parameters;
+        $RequestPath = '/api/v3/orders/'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'DELETE';
         $JSONPayload = '';
@@ -563,7 +536,7 @@ class Bitso
           Returns:
             A bitso.Order instance.
         */
-        $path = $this->url . '/api/v3/orders/';
+        $path = $this->url.'/api/v3/orders/';
         $RequestPath = '/api/v3/orders/';
         $nonce = $this->makeNonce();
         $HTTPMethod = 'POST';
@@ -585,8 +558,8 @@ class Bitso
             A bitso.Funding Destination instance.
         */
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/funding_destination/?' . $parameters;
-        $RequestPath = '/api/v3/funding_destination/?' . $parameters;
+        $path = $this->url.'/funding_destination/?'.$parameters;
+        $RequestPath = '/api/v3/funding_destination/?'.$parameters;
         $nonce = $this->makeNonce();
         $HTTPMethod = 'GET';
         $JSONPayload = '';
@@ -601,5 +574,20 @@ class Bitso
         $this->secret = $secret;
 
         return $this;
+    }
+
+    private function makeNonce(): float
+    {
+        return round(microtime(true) * 1000);
+    }
+
+    private function makeMessage($HTTPMethod, $RequestPath, $JSONPayload = ''): string
+    {
+        return $this->makeNonce().$HTTPMethod.$RequestPath.$JSONPayload;
+    }
+
+    private function makeAuthHeader($message, $signature): string
+    {
+        return sprintf('Bitso %s:%s:%s', $this->key, $this->makeNonce(), $signature);
     }
 }
