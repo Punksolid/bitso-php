@@ -21,7 +21,7 @@ class Bitso
     }
 
     //function to perform curl url request depending on type and method
-    public function url_request($type, $path, $HTTPMethod, $JSONPayload, $authHeader = ''): string
+    public function url_request($type, $path, $HTTPMethod, string $JSONPayload = '', $authHeader = ''): string
     {
         if ($type === 'PUBLIC') {
             $response = $this->client->request('GET', $path);
@@ -66,8 +66,7 @@ class Bitso
         $path = $this->url.'/api/v3/available_books/';
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload);
+        $result = $this->url_request($type, $path, $HTTPMethod, );
 
         return $this->checkAndDecode($result);
     }
@@ -115,8 +114,7 @@ class Bitso
         $path = $this->url.'/api/v3/order_book/?'.$parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload);
+        $result = $this->url_request($type, $path, $HTTPMethod);
 
         return $this->checkAndDecode($result);
     }
@@ -144,8 +142,7 @@ class Bitso
         $path = $this->url.'/api/v3/trades/?'.$parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $result = $this->url_request($type, $path, $HTTPMethod, $JSONPayload);
+        $result = $this->url_request($type, $path, $HTTPMethod);
 
         return $this->checkAndDecode($result);
     }
@@ -190,7 +187,7 @@ class Bitso
         return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function balances(?string $asked_currency = null)
+    public function balances(string $asked_currency = null)
     {
         /*
         Get a user's balance.
@@ -358,7 +355,12 @@ class Bitso
      *
      * @throws \JsonException
      */
-    public function withdrawals($withdrawal_id = null, $origin_id = null, $status = null, $limit = 25, $method = null, $marker = null): array
+    public function withdrawals($withdrawal_id = null,
+                                $origin_id = null,
+                                $status = null,
+                                $limit = 25,
+                                $method = null,
+                                $marker = null): array
     {
         $params = [
             'withdrawal_id' => $withdrawal_id,
@@ -518,30 +520,11 @@ class Bitso
 
     public function place_order($params): array
     {
-        /*
-        Places a buy limit order.
-          Args:
-            book (str):
-              Specifies which book to use.
-            side (str):
-              the order side (buy or sell)
-            order_type (str):
-              Order type (limit or market)
-            major (str):
-              The amount of major currency for this order. An order could be specified in terms of major or minor, never both.
-            minor (str):
-              The amount of minor currency for this order. An order could be specified in terms of major or minor, never both.
-            price (str):
-              Price per unit of major. For use only with limit orders.
-          Returns:
-            A bitso.Order instance.
-        */
+
         $path = $this->url.'/api/v3/orders/';
         $RequestPath = '/api/v3/orders/';
-        $nonce = $this->makeNonce();
         $HTTPMethod = 'POST';
         $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-        $type = 'PRIVATE';
 
         return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }

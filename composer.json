@@ -17,7 +17,7 @@
     ],
     "require": {
         "php": ">=8.2",
-        "symfony/http-client": "^6.3"
+        "symfony/http-client": "^7"
     },
     "require-dev": {
         "rector/rector": "^0.18.5",

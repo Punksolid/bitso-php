@@ -2,17 +2,15 @@
 
 namespace BitsoAPI;
 
-
 use Datetime;
 use Exception;
-use PhpParser\Node\Stmt\DeclareDeclare;
 use PHPUnit\Framework\TestCase;
 
 class ResultsTest extends TestCase
 {
-  public const key = '';
+    public const key = '';
 
-  public const secret = '';
+    public const secret = '';
 
     public function testProcessResults()
     {
@@ -25,8 +23,8 @@ class ResultsTest extends TestCase
     public function testAvailableBooks()
     {
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -70,8 +68,8 @@ JSON
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -105,8 +103,8 @@ JSON
     public function testOrderBook()
     {
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -148,14 +146,14 @@ JSON,
 
         $response = $bitso->order_book('btc_mxn')['payload'];
 
-        $this->assertIsArray( $response['asks']);
+        $this->assertIsArray($response['asks']);
         $this->assertEquals(count($response['asks']), 3);
         $this->assertIsArray($response['bids']);
         $this->assertEquals(count($response['bids']), 2);
-        $this->assertEquals($response['asks'][0]['price'], (float)'5632.24');
-        $this->assertEquals($response['asks'][0]['amount'], (float)'1.34491802');
-        $this->assertEquals($response['bids'][0]['price'], (float)'6123.55');
-        $this->assertEquals($response['bids'][0]['amount'], (float)'1.12560000');
+        $this->assertEquals($response['asks'][0]['price'], (float) '5632.24');
+        $this->assertEquals($response['asks'][0]['amount'], (float) '1.34491802');
+        $this->assertEquals($response['bids'][0]['price'], (float) '6123.55');
+        $this->assertEquals($response['bids'][0]['amount'], (float) '1.12560000');
         $this->assertEquals($response['sequence'], 27214);
         date_default_timezone_set('UTC');
         $date_time = new DateTime($response->updated_at);
@@ -173,8 +171,8 @@ JSON,
     public function testTrades()
     {
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -204,7 +202,6 @@ JSON
 
         $response = $bitso->trades('btc_mxn')->payload[0];
 
-       // $this->assertInstanceOf($response->asks,Array());
         $this->assertEquals(count($bitso->trades('btc_mxn')->payload), 2);
         $this->assertEquals($response->price, (float) '5545.01');
 
@@ -222,8 +219,8 @@ JSON
     public function testAccountStatus()
     {
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -264,8 +261,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -309,8 +306,8 @@ JSON
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -338,8 +335,8 @@ JSON,
         $response = $bitso->fees()['payload'];
 
         $this->assertEquals($response['fees'][0]['book'], 'btc_mxn');
-        $this->assertEquals($response['fees'][0]['fee_decimal'], (float)'0.0001');
-        $this->assertEquals($response['fees'][0]['fee_percent'], (float)'0.01');
+        $this->assertEquals($response['fees'][0]['fee_decimal'], (float) '0.0001');
+        $this->assertEquals($response['fees'][0]['fee_percent'], (float) '0.01');
 
     }
 
@@ -347,10 +344,10 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
-        $ledgerJsonResponseExample = file_get_contents(__DIR__ . '/ledger.json');
+        $ledgerJsonResponseExample = file_get_contents(__DIR__.'/ledger.json');
 
         $fake_response = json_decode($ledgerJsonResponseExample, true, 512, JSON_THROW_ON_ERROR);
 
@@ -364,17 +361,16 @@ JSON,
 
     }
 
-        public function testWithdrawals()
-        {
+    public function testWithdrawals()
+    {
 
-            $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+        $bitso = $this->getMockBuilder(Bitso::class)
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
+        $responseExampleJson = file_get_contents(__DIR__.'/withdrawals.json');
 
-            $responseExampleJson = file_get_contents(__DIR__ . '/withdrawals.json');
-
-            $fake_response = json_decode($responseExampleJson, true, 512, JSON_THROW_ON_ERROR);
+        $fake_response = json_decode($responseExampleJson, true, 512, JSON_THROW_ON_ERROR);
 
         $bitso->expects($this->any())
             ->method('withdrawals')
@@ -382,18 +378,18 @@ JSON,
 
         $response = $bitso->withdrawals('btc_mxn')['payload'];
 
-          $this->assertEquals($response[0]['amount'], (float) '0.48650929');
-          $this->assertEquals($response[1]['amount'], (float) '2612.70');
-         $this->assertEquals($response[2]['amount'], (float) '500.00');
+        $this->assertEquals($response[0]['amount'], (float) '0.48650929');
+        $this->assertEquals($response[1]['amount'], (float) '2612.70');
+        $this->assertEquals($response[2]['amount'], (float) '500.00');
     }
 
     public function testFundings()
     {
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
-        $string = file_get_contents(__DIR__ . '/fundings.json');
+        $string = file_get_contents(__DIR__.'/fundings.json');
         $fake_response = json_decode($string, true, 512, JSON_THROW_ON_ERROR);
 
         $bitso->expects($this->any())
@@ -402,18 +398,16 @@ JSON,
 
         $response = $bitso->fundings('btc')['payload'];
 
-        $this->assertEquals($response[0]['amount'], (float)'0.48650929');
-        $this->assertEquals($response[1]['amount'], (float)'300.15');
+        $this->assertEquals($response[0]['amount'], (float) '0.48650929');
+        $this->assertEquals($response[1]['amount'], (float) '300.15');
     }
-
-
 
     public function testOpenOrders()
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -457,7 +451,7 @@ JSON,
         }]
     }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -466,11 +460,11 @@ JSON,
 
         $response = $bitso->open_orders('btc_mxn')['payload'];
 
-          $this->assertEquals($response[0]['original_amount'], (float) '0.01000000');
-          $this->assertEquals($response[0]['price'], (float) '5600.00');
-          $this->assertEquals($response[0]['type'], 'limit');
-          $this->assertEquals($response[0]['oid'], '543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v');
-          $this->assertEquals($response[1]['status'], 'open');
+        $this->assertEquals($response[0]['original_amount'], (float) '0.01000000');
+        $this->assertEquals($response[0]['price'], (float) '5600.00');
+        $this->assertEquals($response[0]['type'], 'limit');
+        $this->assertEquals($response[0]['oid'], '543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v');
+        $this->assertEquals($response[1]['status'], 'open');
 
     }
 
@@ -478,8 +472,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -511,7 +505,7 @@ JSON,
         }]
     }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -520,9 +514,9 @@ JSON,
 
         $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v', 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1'])['payload'];
 
-          $this->assertEquals($response[0]['original_amount'], (float) '0.01000000');
-          $this->assertEquals($response[0]['price'], (float) '5600.00');
-          $this->assertEquals($response[0]['type'], 'limit');
+        $this->assertEquals($response[0]['original_amount'], (float) '0.01000000');
+        $this->assertEquals($response[0]['price'], (float) '5600.00');
+        $this->assertEquals($response[0]['type'], 'limit');
 
     }
 
@@ -530,8 +524,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -543,7 +537,7 @@ JSON,
                 ]
         }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -552,8 +546,8 @@ JSON,
 
         $response = $bitso->lookup_order(['543cr2v32a1h684430tvcqx1b0vkr93wd694957cg8umhyrlzkgbaedmf976ia3v', 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1', 'd71e3xy2lowndkfmde6bwkdsvw62my6058e95cbr08eesu0687i5swyot4rf2yf8'])['payload'];
 
-          $this->assertIsArray( $response);
-          $this->assertEquals(count($response), 3);
+        $this->assertIsArray($response);
+        $this->assertEquals(count($response), 3);
 
     }
 
@@ -561,8 +555,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -572,8 +566,8 @@ JSON,
         }
     }
 JSON,
-        true
-);
+            true
+        );
 
         $bitso->expects($this->any())
             ->method('place_order')
@@ -581,7 +575,7 @@ JSON,
 
         $response = $bitso->place_order(['book' => 'btc_mxn', 'side' => 'buy', 'order_type' => 'limit', 'major' => '0.1', 'price' => '5600'])['payload'];
 
-          $this->assertEquals($response['oid'], 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1');
+        $this->assertEquals($response['oid'], 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1');
 
     }
 
@@ -589,8 +583,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -601,8 +595,8 @@ JSON,
             }
         }
 JSON,
-        true
-);
+            true
+        );
 
         $bitso->expects($this->any())
             ->method('funding_destination')
@@ -610,7 +604,7 @@ JSON,
 
         $response = $bitso->funding_destination('mxn')['payload'];
 
-          $this->assertEquals($response['account_identifier_name'], 'SPEI CLABE');
+        $this->assertEquals($response['account_identifier_name'], 'SPEI CLABE');
 
     }
 
@@ -618,8 +612,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -638,7 +632,7 @@ JSON,
             }
         }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -647,7 +641,7 @@ JSON,
 
         $response = $bitso->btc_withdrawal(['amount' => '0.48650929', 'address' => '3EW92Ajg6sMT4hxK8ngEc7Ehrqkr9RoDt7'])['payload'];
 
-          $this->assertEquals($response['amount'], (float) '0.48650929');
+        $this->assertEquals($response['amount'], (float) '0.48650929');
 
     }
 
@@ -655,8 +649,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -675,7 +669,7 @@ JSON,
         }
     }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -684,7 +678,7 @@ JSON,
 
         $response = $bitso->eth_withdrawal(['amount' => '10.00', 'address' => '0x55f03a62acc946dedcf8a0c47f16ec3892b29e6d'])['payload'];
 
-          $this->assertEquals($response['amount'], (float) '10.00');
+        $this->assertEquals($response['amount'], (float) '10.00');
 
     }
 
@@ -692,8 +686,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -712,7 +706,7 @@ JSON,
             }
         }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
@@ -721,7 +715,7 @@ JSON,
 
         $response = $bitso->ripple_withdrawal(['type' => 'btc', 'amount' => '0.48650929', 'address' => 'rG1QQv2nh2gr7RCZ1P8YYcBUKCCN633jCn'])['payload'];
 
-          $this->assertEquals($response->amount, (float) '0.48650929');
+        $this->assertEquals($response->amount, (float) '0.48650929');
 
     }
 
@@ -729,8 +723,8 @@ JSON,
     {
 
         $bitso = $this->getMockBuilder(Bitso::class)
-        ->setConstructorArgs([self::key, self::secret])
-        ->getMock();
+            ->setConstructorArgs([self::key, self::secret])
+            ->getMock();
 
         $fake_response = json_decode(<<<'JSON'
 {
@@ -754,7 +748,7 @@ JSON,
             }
         }
 JSON,
-        true
+            true
         );
 
         $bitso->expects($this->any())
