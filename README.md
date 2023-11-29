@@ -319,7 +319,7 @@ $place_order = $bitso->place_order(['book'  => 'btc_mxn', 'side'  => 'buy', 'maj
 ## Gets a Funding destination address to fund your account
 ## fund_currency  - Specifies the currency you want to fund your account with (btc, eth, mxn)
 ##                            - str
-$funding_destination = $bitso->funding_destination(['fund_currency'=>'eth']);
+$funding_destination = $bitso->fundingDestination(['fund_currency'=>'eth']);
 ```
 
 

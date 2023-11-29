@@ -25,8 +25,7 @@ $id = $place_order->payload->oid;
 $lookup_order = $bitso->lookup_order([$id]);
 //NEED TO IMPLEMENT ALL
 $cancel_order = $bitso->cancel_order([$id, $id, $id]);
-$funding_destination = $bitso->funding_destination(['fund_currency' => 'eth']);
-print_r($funding_destination);
+$funding_destination = $bitso->fundingDestination(['fund_currency' => 'eth']);
 // $btc_withdrawal = $bitso->btc_withdrawal(array('amount'  => '.05',
 //                               'address'  => ''));
 // $eth_withdrawal = $bitso->eth_withdrawal(array('amount'  => '.05',

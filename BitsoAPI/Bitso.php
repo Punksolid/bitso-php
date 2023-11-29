@@ -529,7 +529,7 @@ class Bitso
         return $this->getData($path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
-    public function funding_destination($params): array
+    public function fundingDestination($params): array
     {
         /*
         Returns account funding information for specified currencies.

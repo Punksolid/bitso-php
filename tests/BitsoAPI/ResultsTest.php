@@ -602,7 +602,7 @@ JSON,
             ->method('funding_destination')
             ->willReturn($fake_response);
 
-        $response = $bitso->funding_destination('mxn')['payload'];
+        $response = $bitso->fundingDestination('mxn')['payload'];
 
         $this->assertEquals($response['account_identifier_name'], 'SPEI CLABE');
 
