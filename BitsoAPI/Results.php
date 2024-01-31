@@ -11,7 +11,6 @@ class Results
 
     public function processResults()
     {
-
         $a = 0;
         $b = 0;
         $c = 0;
@@ -52,7 +51,7 @@ class Results
         //NEED TO IMPLEMENT ALL
         $cancel_order = $bitso->cancel_order([$id, $id, $id]);
 
-        $funding_destination = $bitso->funding_destination(['fund_currency' => 'eth']);
+        $funding_destination = $bitso->fundingDestination(['fund_currency' => 'eth']);
 
         // $btc_withdrawal = $bitso->btc_withdrawal(array('amount'  => '.05',
         //                               'address'  => ''));
@@ -65,58 +64,57 @@ class Results
         // $spei_withdrawal = $bitso->spei_withdrawal(array('amount'  => '105',
         //                               'recipient_given_names'  => 'Andre Pierre','recipient_family_names'=>'Gignac', 'clabe'=>'CLABE','notes_ref'=>'NOTESREF','numeric_ref'=>'NUMREF'));
 
-        if ($ticker->success == 1) {
+        if ($ticker->success === 1) {
             $a = 1;
         }
-        if ($order_book->success == 1) {
+        if ($order_book->success === 1) {
             $b = 1;
         }
-        if ($trades->success == 1) {
+        if ($trades->success === 1) {
             $c = 1;
         }
-        if ($available_books->success == 1) {
+        if ($available_books->success === 1) {
             $d = 1;
         }
-        if ($account_status->success == 1) {
+        if ($account_status->success === 1) {
             $e = 1;
         }
-        if ($balances->success == 1) {
+        if ($balances->success === 1) {
             $f = 1;
         }
-        if ($fees->success == 1) {
+        if ($fees->success === 1) {
             $g = 1;
         }
-        if ($ledger->success == 1) {
+        if ($ledger->success === 1) {
             $h = 1;
         }
-        if ($withdrawals->success == 1) {
+        if ($withdrawals->success === 1) {
             $i = 1;
         }
-        if ($fundings->success == 1) {
+        if ($fundings->success === 1) {
             $j = 1;
         }
-        if ($user_trades->success == 1) {
+        if ($user_trades->success === 1) {
             $k = 1;
         }
-        if ($open_orders->success == 1) {
+        if ($open_orders->success === 1) {
             $l = 1;
         }
-        if ($place_order->success == 1) {
+        if ($place_order->success === 1) {
             $m = 1;
         }
-        if ($lookup_order->success == 1) {
+        if ($lookup_order->success === 1) {
             $n = 1;
         }
-        if ($cancel_order->success == 1) {
+        if ($cancel_order->success === 1) {
             $o = 1;
         }
-        if ($funding_destination->success == 1) {
+        if ($funding_destination->success === 1) {
             $p = 1;
         }
 
-        if (($a + $b + $c + $d + $e + $f + $g + $h + $i + $j + $k + $l + $m + $n + $o + $p) == 16) {
+        if (($a + $b + $c + $d + $e + $f + $g + $h + $i + $j + $k + $l + $m + $n + $o + $p) === 16) {
             return 1;
         }
-
     }
 }
