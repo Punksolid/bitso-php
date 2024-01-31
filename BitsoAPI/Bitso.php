@@ -133,7 +133,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
 
@@ -176,7 +176,7 @@ class Bitso
         $HTTPMethod = 'GET';
         $JSONPayload = '';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
 
@@ -208,7 +208,7 @@ class Bitso
         $RequestPath = '/api/v3/withdrawals/?'.$parameters;
         $HTTPMethod = 'GET';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, '', $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, '');
     }
 
     public function fundings($params = []): array
@@ -244,7 +244,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function user_trades($params = [], $ids = []): array
@@ -275,7 +275,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function open_orders($params): array
@@ -297,7 +297,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function lookup_order($ids)
@@ -319,7 +319,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function cancel_order($ids): array
@@ -336,7 +336,7 @@ class Bitso
         $HTTPMethod = 'DELETE';
         $JSONPayload = '';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function place_order($params): array
@@ -346,7 +346,7 @@ class Bitso
         $HTTPMethod = 'POST';
         $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function fundingDestination($params): array
@@ -368,7 +368,7 @@ class Bitso
         $JSONPayload = '';
         $type = 'PRIVATE';
 
-        return Client::getData($path, $RequestPath, $HTTPMethod, $JSONPayload, $this);
+        return Client::getData($this, $path, $RequestPath, $HTTPMethod, $JSONPayload);
     }
 
     public function setCredentials($key, $secret): static

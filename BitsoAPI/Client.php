@@ -76,7 +76,7 @@ class Client
 
 
     // All the other API methods...
-    public static function getData($path, $RequestPath, $HTTPMethod, $JSONPayload = '', Bitso $instance): array
+    public static function getData(Bitso $instance, $path, $RequestPath, $HTTPMethod, $JSONPayload = ''): array
     {
         $nonce = self::makeNonce();
         $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
