@@ -89,7 +89,7 @@ $ticker['payload']->ask;
 ## [aggregate = True] - Group orders with the same price
 ##                - boolean
 
-$ob = $bitso->order_book(["book"=>"btc_mxn","aggregate"=> "True"]);
+$ob = $bitso->orderBook(["book"=>"btc_mxn","aggregate"=> "True"]);
 
 ## sample usage for array of asks for btc_mxn
 $ob['payload']->asks;

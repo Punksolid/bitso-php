@@ -49,7 +49,7 @@ class Bitso
     //##### PUBLIC QUERIES #######
     //#####          #######
 
-    public function order_book($params)
+    public function orderBook($params)
     {
         $parameters = http_build_query($params, '', '&');
         $path = $this->url . '/api/v3/order_book/?' . $parameters;

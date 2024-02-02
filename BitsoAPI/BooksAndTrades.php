@@ -56,4 +56,34 @@ class BooksAndTrades
 
         return $result['payload'];
     }
+
+    //#####          #######
+    //##### PUBLIC QUERIES #######
+    //#####          #######
+
+    /**
+     *The method GET /order_book/ enables you to retrieve a list of all open orders in the specified book. The value of the aggregate query parameter determines the response returned:
+     *
+     * True: The service aggregates the orders by price, and the response includes only the top 50 orders for each side of the book. It is the default behavior.
+     * False: The response consists of the whole order book.
+     * @see https://docs.bitso.com/bitso-api/docs/list-order-book
+     * @param $params
+     * @return mixed
+     * @throws JsonException
+     * @throws \ErrorException
+     * @throws \Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface
+     * @throws \Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface
+     */
+    public function orderBook($params)
+    {
+        $parameters = http_build_query($params, '', '&');
+        $path = $this->url . '/api/v3/order_book/?' . $parameters;
+        $type = 'PUBLIC';
+        $HTTPMethod = 'GET';
+        $result = Client::urlRequest($this, $type, $path, $HTTPMethod, '', '');
+
+        return Client::checkAndDecode($result);
+    }
 }

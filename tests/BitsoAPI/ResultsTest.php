@@ -141,10 +141,10 @@ JSON,
         );
 
         $bitso->expects($this->any())
-            ->method('order_book')
+            ->method('orderBook')
             ->willReturn($fake_response);
 
-        $response = $bitso->order_book('btc_mxn')['payload'];
+        $response = $bitso->orderBook('btc_mxn')['payload'];
 
         $this->assertIsArray($response['asks']);
         $this->assertEquals(count($response['asks']), 3);

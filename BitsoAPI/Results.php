@@ -31,7 +31,7 @@ class Results
         $bitsoPublic = new Bitso('https://stage.bitso.com');
         $bitso = new Bitso(self::key, self::secret, 'https://stage.bitso.com');
 
-        $order_book = $bitsoPublic->order_book(['book' => 'btc_mxn', 'aggregate' => 'True']);
+        $order_book = $bitsoPublic->orderBook(['book' => 'btc_mxn', 'aggregate' => 'True']);
 
         $ticker = $bitsoPublic->ticker(['book' => 'btc_mxn']);
         $trades = $bitsoPublic->trades(['book' => 'btc_mxn', 'limit' => '2']);
