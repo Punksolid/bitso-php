@@ -59,7 +59,7 @@ class Bitso
 
         return Client::checkAndDecode($result);
     }
-
+  
     public function getTotalInMxn($accounts)
     {
         $sum_in_mxn = 0;
@@ -83,10 +83,10 @@ class Bitso
     {
         $ticker = $this->booksAndTrades()->ticker($book);
 
+
         return $ticker['last'];
+
     }
-
-
 
     private function makeMessage($HTTPMethod, $RequestPath, $JSONPayload = ''): string
     {
@@ -108,6 +108,7 @@ class Bitso
         $RequestPath = '/api/v3/fundings/?' . $parameters;
         $HTTPMethod = 'GET';
 
+
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
 
@@ -118,7 +119,9 @@ class Bitso
         $RequestPath = '/api/v3/open_orders/?' . $parameters;
         $HTTPMethod = 'GET';
 
+
         return Client::getData($path, $RequestPath, $HTTPMethod);
+
     }
 
     public function lookup_order($ids)
@@ -144,6 +147,7 @@ class Bitso
         $RequestPath = '/api/v3/orders/' . $parameters;
         $HTTPMethod = 'DELETE';
 
+
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
 
@@ -153,6 +157,7 @@ class Bitso
         $RequestPath = '/api/v3/orders/';
         $HTTPMethod = 'POST';
         $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
+
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
