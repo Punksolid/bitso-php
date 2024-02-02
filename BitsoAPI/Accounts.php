@@ -2,49 +2,47 @@
 
 namespace BitsoAPI;
 
+use JsonException;
+use Symfony\Component\HttpClient\HttpClient;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 class Accounts
 {
-    public function __construct(
-        private Bitso $bitso,
-    )
-    {}
+    private Client $client;
+    private HttpClientInterface $httpClient;
+    private Bitso $bitso;
+
+    public function __construct(Client $client, Bitso $bitso) {
+        $this->client = $client;
+        $this->httpClient = HttpClient::create([
+            'base_uri' => Bitso::URL,
+        ]);
+        $this->bitso = $bitso;
+    }
 
     public function balances(?string $asked_currency = null): array
     {
-        /*
-        Get a user's balance.
-            Returns:
-              A list of bitso.Balance instances.
-        */
+        $result = $this->client->getData(
+            '/api/v3/balance/'
+            );
 
-        $request_path = '/api/v3/balance/';
-
-        $nonce = Client::makeNonce();
-        $HTTPMethod = 'GET';
-        $JSONPayload = '';
-        $message = $nonce.$HTTPMethod.$request_path.$JSONPayload;
-        $format = 'Bitso %s:%s:%s';
-        $signature = hash_hmac('sha256', $message, (string) $this->bitso->secret);
-        $authHeader = sprintf($format, $this->bitso->key, $nonce, $signature);
-
-        $result = $this->bitso->client->request(
-            'GET',
-            $this->bitso->url.'/api/v3/balance/',
-            [
-                'headers' => ['Authorization' => $authHeader],
-            ]
-        );
-
-        $balances_array = json_decode($result->getContent(), true, 512, JSON_THROW_ON_ERROR);
-        $balances_array = $balances_array['payload']['balances'];
+        $balances_array = $result;
 
         if ($asked_currency !== null) {
             $balances_array = array_filter($balances_array, fn ($balance) => $balance['currency'] === $asked_currency);
         }
 
-        return $balances_array;
+        return $balances_array['payload']['balances'];
     }
 
+    /**
+     * Bitso does not provide a way to get the total value of the account in a specific currency. This method will
+     * calculate the total value of the account in the specified currency. Based on the orders in the books.
+     *
+     * @param $in_currency
+     * @return int
+     * @throws JsonException
+     */
     public function accountValue($in_currency = 'usd'): int
     {
         $fallback_currency_converted_to = 'mxn';
@@ -94,5 +92,10 @@ class Accounts
         }
 
         return $this->bitso->getTotalInMxn($accounts);
+    }
+
+    public function accountStatus(): array
+    {
+        return $this->client->getData('/api/v3/account_status/')['payload'];
     }
 }

@@ -89,7 +89,7 @@ $ticker['payload']->ask;
 ## [aggregate = True] - Group orders with the same price
 ##                - boolean
 
-$ob = $bitso->order_book(["book"=>"btc_mxn","aggregate"=> "True"]);
+$ob = $bitso->orderBook(["book"=>"btc_mxn","aggregate"=> "True"]);
 
 ## sample usage for array of asks for btc_mxn
 $ob['payload']->asks;
@@ -127,7 +127,7 @@ with your [Bitso credentials](https://bitso.com/api_info#generating-api-keys)
 
 ```php
 ## Your account status
-$status = $bitso->account_status();
+$status = $bitso->accountStatus();
 
 ##sample usage for account status array
 $status['payload'];
@@ -236,7 +236,7 @@ $fundings['payload'];
 ##                 - string - 'asc' or
 ##                 - 'desc'
 
-$user_trades = $bitso->user_trades(['book'=>'btc_mxn']);
+$user_trades = $bitso->userTrades(['book'=>'btc_mxn']);
 
 ##sample usage for getting array of user trades
 $user_trades['payload'];
@@ -309,7 +309,7 @@ $cancel_order =  $bitso->cancel_order([oids]);
 ## price  - Price per unit of major. For use only with limit orders
 ##        - string
 
-$place_order = $bitso->place_order(['book'  => 'btc_mxn', 'side'  => 'buy', 'major' => '.01', 'price' => '1000', type'  => 'limit']);
+$place_order = $bitso->placeOrder(['book'  => 'btc_mxn', 'side'  => 'buy', 'major' => '.01', 'price' => '1000', type'  => 'limit']);
 ```
 
 

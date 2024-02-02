@@ -141,10 +141,10 @@ JSON,
         );
 
         $bitso->expects($this->any())
-            ->method('order_book')
+            ->method('orderBook')
             ->willReturn($fake_response);
 
-        $response = $bitso->order_book('btc_mxn')['payload'];
+        $response = $bitso->orderBook('btc_mxn')['payload'];
 
         $this->assertIsArray($response['asks']);
         $this->assertEquals(count($response['asks']), 3);
@@ -244,10 +244,10 @@ JSON,
         );
 
         $bitso->expects($this->any())
-            ->method('account_status')
+            ->method('accountStatus')
             ->willReturn($fake_response);
 
-        $response = $bitso->account_status()['payload'];
+        $response = $bitso->accountStatus()['payload'];
 
         $this->assertEquals($response['client_id'], '1234');
         $this->assertEquals($response['daily_limit'], (float) '5300.00');
@@ -570,10 +570,10 @@ JSON,
         );
 
         $bitso->expects($this->any())
-            ->method('place_order')
+            ->method('placeOrder')
             ->willReturn($fake_response);
 
-        $response = $bitso->place_order(['book' => 'btc_mxn', 'side' => 'buy', 'order_type' => 'limit', 'major' => '0.1', 'price' => '5600'])['payload'];
+        $response = $bitso->placeOrder(['book' => 'btc_mxn', 'side' => 'buy', 'order_type' => 'limit', 'major' => '0.1', 'price' => '5600'])['payload'];
 
         $this->assertEquals($response['oid'], 'qlbga6b600n3xta7actori10z19acfb20njbtuhtu5xry7z8jswbaycazlkc0wf1');
 

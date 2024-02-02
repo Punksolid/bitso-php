@@ -31,20 +31,20 @@ class Results
         $bitsoPublic = new Bitso('https://stage.bitso.com');
         $bitso = new Bitso(self::key, self::secret, 'https://stage.bitso.com');
 
-        $order_book = $bitsoPublic->order_book(['book' => 'btc_mxn', 'aggregate' => 'True']);
+        $order_book = $bitsoPublic->orderBook(['book' => 'btc_mxn', 'aggregate' => 'True']);
 
         $ticker = $bitsoPublic->ticker(['book' => 'btc_mxn']);
         $trades = $bitsoPublic->trades(['book' => 'btc_mxn', 'limit' => '2']);
         $available_books = $bitsoPublic->available_books();
-        $account_status = $bitso->account_status();
+        $account_status = $bitso->accountStatus();
         $balances = $bitso->balances();
         $fees = $bitso->fees();
         $ledger = $bitso->ledger(['limit' => '10']);
         $withdrawals = $bitso->withdrawals(['limit' => '10']);
         $fundings = $bitso->fundings(['limit' => '1']);
-        $user_trades = $bitso->user_trades(['book' => 'btc_mxn']);
+        $user_trades = $bitso->userTrades(['book' => 'btc_mxn']);
         $open_orders = $bitso->open_orders(['book' => 'btc_mxn']);
-        $place_order = $bitso->place_order(['book' => 'btc_mxn', 'side' => 'buy', 'major' => '.01', 'price' => '1000', 'type' => 'limit']);
+        $place_order = $bitso->placeOrder(['book' => 'btc_mxn', 'side' => 'buy', 'major' => '.01', 'price' => '1000', 'type' => 'limit']);
         $id = $place_order->payload->oid;
         $lookup_order = $bitso->lookup_order([$id]);
 

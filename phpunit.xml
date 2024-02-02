@@ -5,8 +5,8 @@
          xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.4/phpunit.xsd"
          cacheDirectory=".phpunit.cache">
     <testsuites>
-        <testsuite name="Bitso PHP Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Bitso">
+            <directory>./tests</directory>
         </testsuite>
     </testsuites>
 </phpunit>
