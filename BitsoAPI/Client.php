@@ -66,7 +66,7 @@ class Client
 
     public static function checkAndDecode($result)
     {
-        $result = json_decode((string)$result, true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode((string) $result, true, 512, JSON_THROW_ON_ERROR);
         if ($result['success'] !== true) {
             throw new ErrorException($result['error']['message'], 1);
         }
@@ -74,18 +74,16 @@ class Client
         return $result;
     }
 
-
     // All the other API methods...
-    public static function getData($path, $RequestPath, $HTTPMethod, $JSONPayload = '', Bitso $instance): array
+    public function getData(string $requestPath, string $HTTPMethod = 'GET', $JSONPayload = ''): array
     {
         $nonce = self::makeNonce();
-        $message = $nonce . $HTTPMethod . $RequestPath . $JSONPayload;
-        $signature = hash_hmac('sha256', $message, (string)$instance->secret);
-        $authHeader = sprintf('Bitso %s:%s:%s', $instance->key, $nonce, $signature);
-
-        $result = $instance->client->request(
+        $message = $nonce.$HTTPMethod.$requestPath.$JSONPayload;
+        $signature = hash_hmac('sha256', $message, $this->secret);
+        $authHeader = sprintf('Bitso %s:%s:%s', $this->key, $nonce, $signature);
+        $result = $this->client->request(
             $HTTPMethod,
-            $instance->url . $RequestPath,
+            $this->url.$requestPath,
             [
                 'headers' => ['Authorization' => $authHeader],
             ]
@@ -99,4 +97,8 @@ class Client
         return round(microtime(true) * 1000);
     }
 
+    public function request(string $method, string $url, array $options = [])
+    {
+        return $this->client->request($method, $url, $options);
+    }
 }
