@@ -75,6 +75,7 @@ class Client
     }
 
     // All the other API methods...
+
     public function getData(string $requestPath, string $HTTPMethod = 'GET', $JSONPayload = ''): array
     {
         $nonce = self::makeNonce();
