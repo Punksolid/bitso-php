@@ -6,12 +6,14 @@ use Symfony\Component\HttpClient\HttpClient;
 
 class Orders
 {
-
     private Client $client;
+
     private \Symfony\Contracts\HttpClient\HttpClientInterface $httpClient;
+
     private Bitso $bitso;
 
-    public function __construct(Client $client, Bitso $bitso) {
+    public function __construct(Client $client, Bitso $bitso)
+    {
         $this->client = $client;
         $this->httpClient = HttpClient::create([
             'base_uri' => Bitso::URL,
@@ -36,5 +38,4 @@ class Orders
 
         return $this->client->getData($requestPath)['payload'];
     }
-
 }

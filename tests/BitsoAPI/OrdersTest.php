@@ -6,7 +6,6 @@ use PHPUnit\Framework\TestCase;
 
 class OrdersTest extends TestCase
 {
-
     protected function setUp(): void
     {
         parent::setUp();
@@ -14,7 +13,7 @@ class OrdersTest extends TestCase
 
     public function testFees()
     {
-        $feesResponseObject = <<<JSON
+        $feesResponseObject = <<<'JSON'
 {
    "success":true,
    "payload":{
@@ -87,7 +86,7 @@ JSON;
         ));
 
         $this->assertArrayHasKey('fees', $orders->fees());
-        $this->assertArrayHasKey("book", $orders->fees()['fees'][0]);
+        $this->assertArrayHasKey('book', $orders->fees()['fees'][0]);
     }
 
     public function testUserTrades()
@@ -159,5 +158,4 @@ JSON;
 
         return $bitso_client;
     }
-
 }
