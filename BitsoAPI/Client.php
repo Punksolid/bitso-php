@@ -13,8 +13,11 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class Client
 {
     private HttpClientInterface $client;
+
     private string $key;
+
     private string $secret;
+
     private string $url;
 
     public function __construct(string $key, string $secret, string $url = 'https://bitso.com')
@@ -32,17 +35,16 @@ class Client
      * @throws ClientExceptionInterface
      * @throws TransportExceptionInterface
      * @throws ServerExceptionInterface
-     * function to perform curl url request depending on type and method
+     *                                  function to perform curl url request depending on type and method
      */
     public static function urlRequest(
-        Bitso  $instance,
+        Bitso $instance,
         string $type,
         string $path,
         string $HTTPMethod,
         string $JSONPayload = '',
         string $authHeader = ''
-    ): string
-    {
+    ): string {
         if ($type === 'PUBLIC') {
             $response = $instance->client->request('GET', $path);
 
@@ -64,9 +66,9 @@ class Client
         return $response->getContent();
     }
 
-    public static function checkAndDecode($result)
+    public static function checkAndDecode(string $result)
     {
-        $result = json_decode((string) $result, true, 512, JSON_THROW_ON_ERROR);
+        $result = json_decode( $result, true, 512, JSON_THROW_ON_ERROR);
         if ($result['success'] !== true) {
             throw new ErrorException($result['error']['message'], 1);
         }

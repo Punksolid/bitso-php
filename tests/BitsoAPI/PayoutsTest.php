@@ -2,6 +2,7 @@
 
 namespace BitsoAPI;
 
+use JsonException;
 use PHPUnit\Framework\MockObject\Exception;
 use Tests\TestCase;
 
@@ -9,11 +10,11 @@ class PayoutsTest extends TestCase
 {
     /**
      * @throws Exception
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function testWithdrawals()
     {
-        $jsonWithdrawalsResponse = <<<JSON
+        $jsonWithdrawalsResponse = <<<'JSON'
 {
     "success": true,
     "payload": [
@@ -91,9 +92,9 @@ JSON;
 
         $result = $payouts->withdrawals();
 
-        $this->assertArrayHasKey("wid" , $result[0]);
-        $this->assertArrayHasKey("status" , $result[0]);
-        $this->assertArrayHasKey("created_at" , $result[0]);
+        $this->assertArrayHasKey('wid', $result[0]);
+        $this->assertArrayHasKey('status', $result[0]);
+        $this->assertArrayHasKey('created_at', $result[0]);
     }
 
     public function testWithdrawalMethods()

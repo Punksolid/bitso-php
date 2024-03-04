@@ -10,13 +10,15 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 class Bitso
 {
     //constructor, default is dev url
-    const URL = 'https://bitso.com';
+    public const URL = 'https://bitso.com';
+
     public readonly HttpClientInterface $client;
+
     private Client $bitsoClient;
 
     public function __construct(public $key = '', public $secret = '', public $url = 'https://bitso.com')
     {
-        $this->client = HttpClient::create(['base_uri' => $url,]);
+        $this->client = HttpClient::create(['base_uri' => $url]);
         $this->bitsoClient = new Client($key, $secret, $url);
     }
 
@@ -52,25 +54,25 @@ class Bitso
     public function orderBook($params)
     {
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/api/v3/order_book/?' . $parameters;
+        $path = $this->url.'/api/v3/order_book/?'.$parameters;
         $type = 'PUBLIC';
         $HTTPMethod = 'GET';
         $result = Client::urlRequest($this, $type, $path, $HTTPMethod, '', '');
 
         return Client::checkAndDecode($result);
     }
-  
+
     public function getTotalInMxn($accounts)
     {
-        $sum_in_mxn = 0;
-        $sum_in_usd = 0;
+        $sum_in_mxn = 0.0;
+        $sum_in_usd = 0.0;
         foreach ($accounts as $account) {
             $sum_in_mxn += $account['mxn'];
             $sum_in_usd += $account['usd'];
         }
 
         // convert usd to mxn
-        $usd_to_mxn = $this->getPriceForBook('usd_mxn');
+        $usd_to_mxn = (float)$this->getPriceForBook('usd_mxn');
 
         return $sum_in_mxn + $sum_in_usd * $usd_to_mxn;
     }
@@ -79,18 +81,11 @@ class Bitso
     //##### PRIVATE QUERIES #######
     //#####           #######
 
-    public function getPriceForBook($book)
+    public function getPriceForBook($book): string
     {
         $ticker = $this->booksAndTrades()->ticker($book);
 
-
         return $ticker['last'];
-
-    }
-
-    private function makeMessage($HTTPMethod, $RequestPath, $JSONPayload = ''): string
-    {
-        return Client::makeNonce() . $HTTPMethod . $RequestPath . $JSONPayload;
     }
 
     public function fundings($params = []): array
@@ -104,10 +99,9 @@ class Bitso
             unset($params['fids']);
         }
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/fundings/?' . $parameters;
-        $RequestPath = '/api/v3/fundings/?' . $parameters;
+        $path = $this->url.'/fundings/?'.$parameters;
+        $RequestPath = '/api/v3/fundings/?'.$parameters;
         $HTTPMethod = 'GET';
-
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
@@ -115,20 +109,18 @@ class Bitso
     public function open_orders($params): array
     {
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/open_orders/?' . $parameters;
-        $RequestPath = '/api/v3/open_orders/?' . $parameters;
+        $path = $this->url.'/open_orders/?'.$parameters;
+        $RequestPath = '/api/v3/open_orders/?'.$parameters;
         $HTTPMethod = 'GET';
 
-
         return Client::getData($path, $RequestPath, $HTTPMethod);
-
     }
 
     public function lookup_order($ids)
     {
         $parameters = implode(',', $ids);
-        $path = $this->url . '/orders/' . $parameters;
-        $RequestPath = '/api/v3/orders/' . $parameters;
+        $path = $this->url.'/orders/'.$parameters;
+        $RequestPath = '/api/v3/orders/'.$parameters;
         $HTTPMethod = 'GET';
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
@@ -143,21 +135,19 @@ class Bitso
             $parameters = implode(',', $ids);
         }
 
-        $path = $this->url . '/orders/' . $parameters;
-        $RequestPath = '/api/v3/orders/' . $parameters;
+        $path = $this->url.'/orders/'.$parameters;
+        $RequestPath = '/api/v3/orders/'.$parameters;
         $HTTPMethod = 'DELETE';
-
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
 
     public function placeOrder($params): array
     {
-        $path = $this->url . '/api/v3/orders/';
+        $path = $this->url.'/api/v3/orders/';
         $RequestPath = '/api/v3/orders/';
         $HTTPMethod = 'POST';
         $JSONPayload = json_encode($params, JSON_THROW_ON_ERROR);
-
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
     }
@@ -165,8 +155,8 @@ class Bitso
     public function fundingDestination($params): array
     {
         $parameters = http_build_query($params, '', '&');
-        $path = $this->url . '/funding_destination/?' . $parameters;
-        $RequestPath = '/api/v3/funding_destination/?' . $parameters;
+        $path = $this->url.'/funding_destination/?'.$parameters;
+        $RequestPath = '/api/v3/funding_destination/?'.$parameters;
         $HTTPMethod = 'GET';
 
         return Client::getData($path, $RequestPath, $HTTPMethod);
@@ -180,5 +170,4 @@ class Bitso
 
         return $this;
     }
-
 }
