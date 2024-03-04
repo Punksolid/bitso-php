@@ -20,50 +20,6 @@ class ResultsTest extends TestCase
 
     }
 
-    public function testAvailableBooks()
-    {
-        $bitso = $this->getMockBuilder(Bitso::class)
-            ->setConstructorArgs([self::key, self::secret])
-            ->getMock();
-
-        $fake_response = json_decode(<<<'JSON'
-{
-        "success": true,
-        "payload": [{
-           "book": "btc_mxn",
-           "minimum_amount": ".003",
-           "maximum_amount": "1000.00",
-           "minimum_price": "100.00",
-           "maximum_price": "1000000.00",
-           "minimum_value": "25.00",
-           "maximum_value": "1000000.00"
-        }, {
-           "book": "eth_mxn",
-           "minimum_amount": ".003",
-           "maximum_amount": "1000.00",
-           "minimum_price": "100.0",
-           "maximum_price": "1000000.0",
-           "minimum_value": "25.0",
-           "maximum_value": "1000000.0"
-        }]}
-JSON
-        );
-
-        $bitso->expects($this->any())
-            ->method('available_books')
-            ->willReturn($fake_response);
-
-        $response = $bitso->available_books()->payload[0];
-
-        $this->assertEquals($response->minimum_amount, (float) '.003');
-        $this->assertEquals($response->maximum_amount, (float) '1000.00');
-        $this->assertEquals($response->minimum_price, (float) '100.00');
-        $this->assertEquals($response->maximum_price, (float) '1000000.00');
-        $this->assertEquals($response->minimum_value, (float) '25.00');
-        $this->assertEquals($response->maximum_value, (float) '1000000.00');
-
-    }
-
     public function testTicker()
     {
 

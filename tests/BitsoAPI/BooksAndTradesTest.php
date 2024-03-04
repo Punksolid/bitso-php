@@ -2,7 +2,6 @@
 
 namespace BitsoAPI;
 
-
 use JsonException;
 use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\TestCase;
@@ -14,14 +13,10 @@ class BooksAndTradesTest extends TestCase
     const secret = '';
 
     const url = '';
-    protected function setUp(): void
-    {
-        parent::setUp();
-    }
 
     public function testAvailableBooks(): void
     {
-        $json_response = <<<JSON
+        $json_response = <<<'JSON'
 {
    "payload":[
       {
@@ -171,15 +166,67 @@ class BooksAndTradesTest extends TestCase
 }
 JSON;
         $client = $this->getMockClient($json_response);
-        $booksAndTrades = new BooksAndTrades($client, new Bitso(
-            self::key,
-            self::secret,
-            self::url
-        ));
+        $booksAndTrades = new BooksAndTrades($client, new Bitso(self::key, self::secret, self::url));
 
         $this->assertArrayHasKey('default_chart', $booksAndTrades->availableBooks()[0]);
         $this->assertArrayHasKey('fees', $booksAndTrades->availableBooks()[0]);
         $this->assertArrayHasKey('book', $booksAndTrades->availableBooks()[0]);
+        $this->assertArrayHasKey('minimum_value', $booksAndTrades->availableBooks()[0]);
+        $this->assertArrayHasKey('maximum_amount', $booksAndTrades->availableBooks()[0]);
+        $this->assertArrayHasKey('maximum_value', $booksAndTrades->availableBooks()[0]);
+        $this->assertArrayHasKey('minimum_amount', $booksAndTrades->availableBooks()[0]);
+    }
+//    public function testAvailableBooks()
+//    {
+//        $bitso = $this->getMockBuilder(Bitso::class)
+//            ->setConstructorArgs([self::key, self::secret])
+//            ->getMock();
+//
+//        $fake_response = json_decode(<<<'JSON'
+//{
+//        "success": true,
+//        "payload": [{
+//           "book": "btc_mxn",
+//           "minimum_amount": ".003",
+//           "maximum_amount": "1000.00",
+//           "minimum_price": "100.00",
+//           "maximum_price": "1000000.00",
+//           "minimum_value": "25.00",
+//           "maximum_value": "1000000.00"
+//        }, {
+//           "book": "eth_mxn",
+//           "minimum_amount": ".003",
+//           "maximum_amount": "1000.00",
+//           "minimum_price": "100.0",
+//           "maximum_price": "1000000.0",
+//           "minimum_value": "25.0",
+//           "maximum_value": "1000000.0"
+//        }]}
+//JSON
+//        );
+//
+//        $bitso->expects($this->any())
+//            ->method('available_books')
+//            ->willReturn($fake_response);
+//
+//        $response = $bitso->available_books()->payload[0];
+//
+//        $this->assertEquals($response->minimum_amount, (float) '.003');
+//        $this->assertEquals($response->maximum_amount, (float) '1000.00');
+//        $this->assertEquals($response->minimum_price, (float) '100.00');
+//        $this->assertEquals($response->maximum_price, (float) '1000000.00');
+//        $this->assertEquals($response->minimum_value, (float) '25.00');
+//        $this->assertEquals($response->maximum_value, (float) '1000000.00');
+//
+//    }
+
+    public function getMockClient($json_response): Client
+    {
+        $client = $this->getMockBuilder(Client::class)->disableOriginalConstructor()->getMock();
+
+        $client->expects($this->any())->method('getData')->willReturn(json_decode($json_response, true));
+
+        return $client;
     }
 
     /**
@@ -188,7 +235,7 @@ JSON;
      */
     public function testTicker()
     {
-        $jsonTickerResponseObject = <<<JSON
+        $jsonTickerResponseObject = <<<'JSON'
 {
     "success": true,
     "payload": {
@@ -216,22 +263,38 @@ JSON;
 
     public function testTrades()
     {
-        $bitso = $this->bitso;
+        $jsonTradesResponseObject = <<<'JSON'
+{
+    "success": true,
+    "payload": [{
+        "book": "btc_mxn",
+        "created_at": "2016-04-08T17:52:31.000+00:00",
+        "amount": "0.02000000",
+        "maker_side": "buy",
+        "price": "5545.01",
+        "tid": 55845
+    }, {
+        "book": "btc_mxn",
+        "created_at": "2016-04-08T17:52:31.000+00:00",
+        "amount": "0.33723939",
+        "maker_side": "sell",
+        "price": "5633.98",
+        "tid": 55844
+    }]
+}
+JSON;
 
-        $this->assertArrayHasKey('payload', $bitso->trades(['book' => 'btc_mxn']));
+        $client = $this->getMockClient($jsonTradesResponseObject);
 
+        $booksAndTrades = new BooksAndTrades($client, $this->createMock(Bitso::class));
+        $this->assertArrayHasKey('book', $booksAndTrades->trades(['book' => 'btc_mxn'])[0]);
+        $this->assertArrayHasKey('created_at', $booksAndTrades->trades(['book' => 'btc_mxn'])[0]);
+        $this->assertArrayHasKey('amount', $booksAndTrades->trades(['book' => 'btc_mxn'])[0]);
+        $this->assertArrayHasKey('maker_side', $booksAndTrades->trades(['book' => 'btc_mxn'])[0]);
     }
 
-    public function getMockClient($json_response): Client
+    protected function setUp(): void
     {
-        $client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
-        $client->expects($this->any())
-            ->method('getData')
-            ->willReturn(json_decode($json_response, true));
-
-        return $client;
+        parent::setUp();
     }
 }
